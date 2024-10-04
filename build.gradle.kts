@@ -12,7 +12,9 @@ java {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
-
+tasks.named<Jar>("jar") {
+    enabled = false
+}
 configurations {
 	compileOnly {
 		extendsFrom(configurations.annotationProcessor.get())
