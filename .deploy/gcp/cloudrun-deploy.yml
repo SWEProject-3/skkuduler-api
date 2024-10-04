@@ -1,0 +1,47 @@
+steps:
+  # gradle BUILD
+  - name: 'gradle:8.5.0-jdk17'
+    args:
+      - './gradlew'
+      - 'clean'
+      - 'build'
+
+  # docker BUILD
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/skkuduler/skkuduler-api'
+      - '-f'
+      - '.deploy/Dockerfile'
+      - '.'
+
+  # docker PUSH
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/skkuduler/skkuduler-api:latest'
+
+  # CloudRun DEPLOY
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'goodong-api'
+      - '--image'
+      - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/skkuduler/skkuduler-api'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--region'
+      - 'asia-northeast1'
+      -
+images:
+  - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/skkuduler/skkuduler-api'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+
+
