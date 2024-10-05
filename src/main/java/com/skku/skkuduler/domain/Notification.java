@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Notification {
+public class Notification extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long notificationId;
@@ -29,9 +29,6 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationStatus status;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
-    private LocalDateTime deletedAt;
 
     enum NotificationStatus {
         SENT,

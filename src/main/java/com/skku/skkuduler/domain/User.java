@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class User extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -25,10 +25,6 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime modifiedAt;
-    private LocalDateTime deletedAt;
 
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;
@@ -51,6 +47,5 @@ public class User {
         if(newPassword != null) this.password = newPassword;
 
     }
-
 
 }

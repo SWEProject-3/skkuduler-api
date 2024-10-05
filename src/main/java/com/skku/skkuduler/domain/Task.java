@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class Task {
+public class Task extends BaseTimeEntity{
     @Id
     @GeneratedValue
     private Long id;

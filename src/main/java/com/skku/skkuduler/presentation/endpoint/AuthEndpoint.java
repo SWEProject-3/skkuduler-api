@@ -17,7 +17,6 @@ public class AuthEndpoint {
 
     private final AuthService authService;
 
-
     @PostMapping("/register")
     public ApiResponse<String> registerUser(@RequestBody UserRegistrationRequest userRequest) {
         authService.registerUser(userRequest);
