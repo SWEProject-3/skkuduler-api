@@ -1,7 +1,7 @@
 package com.skku.skkuduler.application;
 
 import com.skku.skkuduler.common.exception.UserNotFoundException;
-import com.skku.skkuduler.common.jwt.JwtUtil;
+import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.domain.User;
 import com.skku.skkuduler.dto.request.UserLoginRequest;
 import com.skku.skkuduler.dto.request.UserRegistrationRequest;
@@ -22,8 +22,9 @@ public class AuthService {
     @Transactional
     public void registerUser(@Valid UserRegistrationRequest userRequest) {
         User user = new User();
-        user.updateProfile(userRequest.getEmail(), userRequest.getEmail());
+        user.changeProfile(userRequest.getEmail(), userRequest.getEmail());
         user.changePassword(passwordEncoder.encode(userRequest.getPassword()));
+        user.changeRole(User.Role.USER);
         userRepository.save(user);
     }
     @Transactional(readOnly = true)

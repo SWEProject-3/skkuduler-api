@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Getter
-public class Department extends BaseTimeEntity {
+public class Department extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

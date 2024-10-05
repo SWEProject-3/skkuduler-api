@@ -1,7 +1,7 @@
 package com.skku.skkuduler.common.config;
 
-import com.skku.skkuduler.common.jwt.JwtAuthenticationFilter;
-import com.skku.skkuduler.common.jwt.JwtUtil;
+import com.skku.skkuduler.common.security.JwtAuthenticationFilter;
+import com.skku.skkuduler.common.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
