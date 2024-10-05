@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Subscribe {
+public class Subscribe extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long subscribeId;
@@ -23,10 +23,6 @@ public class Subscribe {
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
-    private LocalDateTime deletedAt;
 
 
 }

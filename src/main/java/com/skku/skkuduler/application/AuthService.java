@@ -6,6 +6,7 @@ import com.skku.skkuduler.domain.User;
 import com.skku.skkuduler.dto.request.UserLoginRequest;
 import com.skku.skkuduler.dto.request.UserRegistrationRequest;
 import com.skku.skkuduler.infrastructure.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public void registerUser(UserRegistrationRequest userRequest) {
+    public void registerUser(@Valid UserRegistrationRequest userRequest) {
         User user = new User();
         user.updateProfile(userRequest.getEmail(), userRequest.getEmail());
         user.changePassword(passwordEncoder.encode(userRequest.getPassword()));

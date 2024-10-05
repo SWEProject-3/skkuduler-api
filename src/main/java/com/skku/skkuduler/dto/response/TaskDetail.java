@@ -1,4 +1,4 @@
-package com.skku.skkuduler.dto;
+package com.skku.skkuduler.dto.response;
 
 import lombok.*;
 

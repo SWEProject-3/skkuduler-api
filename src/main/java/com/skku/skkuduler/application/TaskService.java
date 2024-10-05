@@ -1,7 +1,7 @@
 package com.skku.skkuduler.application;
 
 import com.skku.skkuduler.domain.Task;
-import com.skku.skkuduler.dto.TaskDetail;
+import com.skku.skkuduler.dto.response.TaskDetail;
 import com.skku.skkuduler.dto.request.TaskPostRequest;
 import com.skku.skkuduler.infrastructure.TaskRepository;
 import lombok.RequiredArgsConstructor;
