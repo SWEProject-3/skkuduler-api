@@ -5,13 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Friendship extends BaseTimeEntity {
+public class Friendship extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long friendshipId;
@@ -26,7 +24,6 @@ public class Friendship extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private FriendshipStatus status;
-
 
     enum FriendshipStatus {
         PENDING,

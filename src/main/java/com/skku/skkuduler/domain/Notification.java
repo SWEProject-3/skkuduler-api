@@ -5,13 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Notification extends BaseTimeEntity{
+public class Notification extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long notificationId;
@@ -28,7 +26,6 @@ public class Notification extends BaseTimeEntity{
 
     @Enumerated(EnumType.STRING)
     private NotificationStatus status;
-
 
     enum NotificationStatus {
         SENT,

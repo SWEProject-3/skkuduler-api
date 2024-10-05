@@ -1,4 +1,4 @@
-package com.skku.skkuduler.common.jwt;
+package com.skku.skkuduler.common.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

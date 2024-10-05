@@ -10,8 +10,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-public class Task extends BaseTimeEntity{
+public class Task extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;

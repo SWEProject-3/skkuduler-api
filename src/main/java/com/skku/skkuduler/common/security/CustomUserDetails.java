@@ -1,4 +1,4 @@
-package com.skku.skkuduler.common.jwt;
+package com.skku.skkuduler.common.security;
 
 import com.skku.skkuduler.domain.User;
 import lombok.RequiredArgsConstructor;
