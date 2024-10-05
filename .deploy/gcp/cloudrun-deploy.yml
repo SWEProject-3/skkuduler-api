@@ -5,6 +5,11 @@ steps:
       - './gradlew'
       - 'clean'
       - 'build'
+    env:
+      - 'SPRING_DATASOURCE_URL=${_SPRING_DATASOURCE_URL}'
+      - 'SPRING_DATASOURCE_USERNAME=${_SPRING_DATASOURCE_USERNAME}'
+      - 'SPRING_DATASOURCE_PASSWORD=${_SPRING_DATASOURCE_PASSWORD}'
+      - 'SPRING_JWT_SECRET=${_SPRING_JWT_SECRET}'
 
   # docker BUILD
   - name: 'gcr.io/cloud-builders/docker'
@@ -36,6 +41,11 @@ steps:
       - '--allow-unauthenticated'
       - '--region'
       - 'asia-northeast1'
+    env:
+      - 'SPRING_DATASOURCE_URL=${_SPRING_DATASOURCE_URL}'
+      - 'SPRING_DATASOURCE_USERNAME=${_SPRING_DATASOURCE_USERNAME}'
+      - 'SPRING_DATASOURCE_PASSWORD=${_SPRING_DATASOURCE_PASSWORD}'
+      - 'SPRING_JWT_SECRET=${_SPRING_JWT_SECRET}'
 
 images:
   - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/skkuduler/skkuduler-api'
