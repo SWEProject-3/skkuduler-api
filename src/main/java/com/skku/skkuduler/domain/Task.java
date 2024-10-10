@@ -18,5 +18,4 @@ public class Task extends BaseEntity {
     private int priority;
     private String createdBy;
     private String description;
-
 }

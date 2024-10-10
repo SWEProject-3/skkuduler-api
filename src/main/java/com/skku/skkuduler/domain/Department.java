@@ -1,5 +1,6 @@
 package com.skku.skkuduler.domain;
 
+import com.skku.skkuduler.domain.user.Subscription;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -14,6 +15,9 @@ public class Department extends BaseEntity {
     private Long deptId;
 
     private String name;
+
+    @OneToMany(mappedBy = "department")
+    private List<Subscription> subscriptions;
 
     @OneToMany(mappedBy = "department")
     private List<Major> majors;

@@ -2,7 +2,7 @@ package com.skku.skkuduler.application;
 
 import com.skku.skkuduler.common.exception.UserNotFoundException;
 import com.skku.skkuduler.common.security.JwtUtil;
-import com.skku.skkuduler.domain.User;
+import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.dto.request.UserLoginRequest;
 import com.skku.skkuduler.dto.request.UserRegistrationRequest;
 import com.skku.skkuduler.infrastructure.UserRepository;

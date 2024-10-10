@@ -19,8 +19,4 @@ public class Image extends BaseEntity {
     @Column(name = "`order`")
     private int order;
 
-    @ManyToOne
-    @JoinColumn(name = "eventId")
-    private Event event;
-
 }

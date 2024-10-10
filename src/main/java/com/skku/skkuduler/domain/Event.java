@@ -1,5 +1,6 @@
 package com.skku.skkuduler.domain;
 
+import com.skku.skkuduler.domain.user.Subscription;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,19 +17,12 @@ public class Event extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long eventId;
-
     private String title;
     private String content;
     private LocalDate startDate;
     private LocalDate endDate;
 
-    @OneToMany(mappedBy = "event")
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Image> images;
-
-    @OneToMany(mappedBy = "event")
-    private List<Notification> notifications;
-
-    @OneToMany(mappedBy = "event")
-    private List<Subscribe> subscriptions;
 
 }

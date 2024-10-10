@@ -1,26 +1,28 @@
-package com.skku.skkuduler.domain;
+package com.skku.skkuduler.domain.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Subscribe extends BaseEntity {
+public class Calender {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long subscribeId;
+    private Long calenderId;
+
+    private String name;
 
     @ManyToOne
-    @JoinColumn(name = "eventId")
-    private Event event;
-
-    @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
-
+    @OneToMany(mappedBy = "calender")
+    private List<CalenderEvent> calenderEvents;
 }

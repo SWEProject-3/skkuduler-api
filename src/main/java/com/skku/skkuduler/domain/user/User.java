@@ -1,5 +1,6 @@
-package com.skku.skkuduler.domain;
+package com.skku.skkuduler.domain.user;
 
+import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,10 +27,10 @@ public class User extends BaseEntity {
     private Role role;
 
     @OneToMany(mappedBy = "user")
-    private List<Notification> notifications;
+    private List<Calender> calenders;
 
     @OneToMany(mappedBy = "user")
-    private List<Subscribe> subscriptions;
+    private List<Subscription> subscriptions;
 
     @OneToMany(mappedBy = "myId")
     private List<Friendship> friendships;

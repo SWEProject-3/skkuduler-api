@@ -1,5 +1,6 @@
-package com.skku.skkuduler.domain;
+package com.skku.skkuduler.domain.user;
 
+import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

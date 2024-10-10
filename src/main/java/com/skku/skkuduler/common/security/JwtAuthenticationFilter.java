@@ -1,6 +1,6 @@
 package com.skku.skkuduler.common.security;
 
-import com.skku.skkuduler.domain.User;
+import com.skku.skkuduler.domain.user.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

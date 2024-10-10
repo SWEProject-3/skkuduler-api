@@ -1,6 +1,7 @@
-package com.skku.skkuduler.domain;
+package com.skku.skkuduler.domain.user;
 
-import com.skku.skkuduler.domain.user.User;
+import com.skku.skkuduler.domain.BaseEntity;
+import com.skku.skkuduler.domain.Department;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,24 +11,18 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Major extends BaseEntity {
+public class Subscription extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long majorId;
+    private Long subscribeId;
 
     @ManyToOne
-    @JoinColumn(name = "dept_id")
+    @JoinColumn(name = "deptId")
     private Department department;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    private MajorType type;
 
-    enum MajorType {
-        MAJOR,
-        MINOR,
-    }
 }
