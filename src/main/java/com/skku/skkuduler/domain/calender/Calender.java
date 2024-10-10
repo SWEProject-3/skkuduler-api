@@ -1,5 +1,6 @@
-package com.skku.skkuduler.domain.user;
+package com.skku.skkuduler.domain.calender;
 
+import com.skku.skkuduler.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,10 +20,15 @@ public class Calender {
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne(mappedBy = "calender", cascade = CascadeType.ALL)
     private User user;
 
-    @OneToMany(mappedBy = "calender")
+    @OneToMany(mappedBy = "calender",cascade = CascadeType.ALL)
     private List<CalenderEvent> calenderEvents;
+
+    public void addEvent(Long eventId) {
+        CalenderEvent calenderEvent = new CalenderEvent(null, eventId);
+        this.calenderEvents.add(calenderEvent);
+    }
+
 }

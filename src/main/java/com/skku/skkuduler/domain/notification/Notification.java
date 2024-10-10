@@ -1,6 +1,8 @@
-package com.skku.skkuduler.domain;
+package com.skku.skkuduler.domain.notification;
 
+import com.skku.skkuduler.domain.BaseEntity;
 import com.skku.skkuduler.domain.user.User;
+import com.skku.skkuduler.domain.event.Event;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,13 +17,9 @@ public class Notification extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long notificationId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
+    private Long eventId;
 
     private String message;
 
