@@ -1,8 +1,8 @@
 package com.skku.skkuduler.presentation.endpoint;
 
 import com.skku.skkuduler.application.AuthService;
-import com.skku.skkuduler.dto.request.UserLoginRequest;
-import com.skku.skkuduler.dto.request.UserRegistrationRequest;
+import com.skku.skkuduler.dto.request.UserLoginRequestDto;
+import com.skku.skkuduler.dto.request.UserRegistrationRequestDto;
 import com.skku.skkuduler.presentation.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,13 +18,13 @@ public class AuthEndpoint {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ApiResponse<String> registerUser(@RequestBody UserRegistrationRequest userRequest) {
+    public ApiResponse<String> registerUser(@RequestBody UserRegistrationRequestDto userRequest) {
         authService.registerUser(userRequest);
         return new ApiResponse<>(200, "User registered successfully");
     }
 
     @PostMapping("/login")
-    public ApiResponse<String> loginUser(@RequestBody UserLoginRequest loginRequest) {
+    public ApiResponse<String> loginUser(@RequestBody UserLoginRequestDto loginRequest) {
         String token = authService.loginUser(loginRequest);
         if (token != null) {
             return new ApiResponse<>(200, "User login successfully", token);

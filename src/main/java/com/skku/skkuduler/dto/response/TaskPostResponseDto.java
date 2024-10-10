@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskPostResponse {
+public class TaskPostResponseDto {
     private int insertedRecords;
 }

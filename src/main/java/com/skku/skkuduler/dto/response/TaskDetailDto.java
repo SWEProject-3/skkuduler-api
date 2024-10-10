@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class TaskDetail {
+public class TaskDetailDto {
     private String title;
     private int priority; // 1-5
     private String createdBy;
