@@ -1,13 +1,12 @@
 package com.skku.skkuduler.domain.friendship;
 
 import com.skku.skkuduler.domain.BaseEntity;
-import com.skku.skkuduler.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "friendship")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

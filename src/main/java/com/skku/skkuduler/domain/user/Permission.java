@@ -1,13 +1,12 @@
 package com.skku.skkuduler.domain.user;
 
 import com.skku.skkuduler.domain.BaseEntity;
-import com.skku.skkuduler.domain.department.Department;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "permission")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,4 +17,7 @@ public class Permission extends BaseEntity {
 
     private Long departmentId;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

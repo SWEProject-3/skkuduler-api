@@ -7,7 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 
-@Entity
+@Entity(name = "department")
 @Getter
 public class Department extends BaseEntity {
     @Id

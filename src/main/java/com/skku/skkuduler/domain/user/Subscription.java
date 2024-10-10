@@ -1,15 +1,12 @@
 package com.skku.skkuduler.domain.user;
 
 import com.skku.skkuduler.domain.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "subscription")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +16,9 @@ public class Subscription extends BaseEntity {
     private Long subscriptionId;
 
     private Long departmentId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

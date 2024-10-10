@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "image")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +19,9 @@ public class Image extends BaseEntity {
 
     @Column(name = "`order`")
     private int order;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 
 }

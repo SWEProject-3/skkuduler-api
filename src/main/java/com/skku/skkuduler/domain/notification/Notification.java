@@ -1,14 +1,12 @@
 package com.skku.skkuduler.domain.notification;
 
 import com.skku.skkuduler.domain.BaseEntity;
-import com.skku.skkuduler.domain.user.User;
-import com.skku.skkuduler.domain.event.Event;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "notification")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
