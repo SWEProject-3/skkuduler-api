@@ -20,8 +20,7 @@ public class Calender {
 
     private String name;
 
-    @OneToOne(mappedBy = "calender", cascade = CascadeType.ALL)
-    private User user;
+    private Long userId;
 
     @OneToMany(mappedBy = "calender",cascade = CascadeType.ALL)
     private List<CalenderEvent> calenderEvents;
