@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
 
+// ???
+
 @Entity
 @Getter
 @Setter
@@ -18,5 +20,4 @@ public class Task extends BaseEntity {
     private int priority;
     private String createdBy;
     private String description;
-
 }

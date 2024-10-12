@@ -1,5 +1,6 @@
-package com.skku.skkuduler.domain;
+package com.skku.skkuduler.domain.user;
 
+import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Entity
+@Entity(name = "user")
 @Getter
 @Builder
 @AllArgsConstructor
@@ -19,20 +20,19 @@ public class User extends BaseEntity {
     private Long userId;
 
     private String email;
+
     private String password;
+
     private String name;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "user")
-    private List<Notification> notifications;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Subscription> subscriptions;
 
-    @OneToMany(mappedBy = "user")
-    private List<Subscribe> subscriptions;
-
-    @OneToMany(mappedBy = "myId")
-    private List<Friendship> friendships;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Permission> permissions;
 
     public enum Role {
         ADMIN,

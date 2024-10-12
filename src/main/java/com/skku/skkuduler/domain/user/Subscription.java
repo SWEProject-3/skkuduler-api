@@ -1,26 +1,24 @@
-package com.skku.skkuduler.domain;
+package com.skku.skkuduler.domain.user;
 
+import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "subscription")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Subscribe extends BaseEntity {
+public class Subscription extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long subscribeId;
+    private Long subscriptionId;
+
+    private Long departmentId;
 
     @ManyToOne
-    @JoinColumn(name = "eventId")
-    private Event event;
-
-    @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
-
 
 }

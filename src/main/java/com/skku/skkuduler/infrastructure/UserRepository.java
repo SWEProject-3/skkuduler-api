@@ -1,6 +1,6 @@
 package com.skku.skkuduler.infrastructure;
 
-import com.skku.skkuduler.domain.User;
+import com.skku.skkuduler.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

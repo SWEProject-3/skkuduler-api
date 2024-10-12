@@ -1,6 +1,6 @@
 package com.skku.skkuduler.common.security;
 
-import com.skku.skkuduler.domain.User;
+import com.skku.skkuduler.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

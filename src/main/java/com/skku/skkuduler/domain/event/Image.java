@@ -1,11 +1,12 @@
-package com.skku.skkuduler.domain;
+package com.skku.skkuduler.domain.event;
 
+import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "image")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +21,7 @@ public class Image extends BaseEntity {
     private int order;
 
     @ManyToOne
-    @JoinColumn(name = "eventId")
+    @JoinColumn(name = "event_id")
     private Event event;
 
 }

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRegistrationRequest {
+public class UserRegistrationRequestDto {
 
     @NotBlank(message = "Please enter your email.")
     @Email(message = "Email is invalid.")
