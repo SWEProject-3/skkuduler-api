@@ -22,6 +22,12 @@ public class Event extends BaseEntity {
 
     private String content;
 
+    private Long departmentId;
+
+    private Long userId;
+
+    private boolean isGlobal;
+
     private LocalDate startDate;
 
     private LocalDate endDate;
