@@ -17,7 +17,7 @@ public class UserRegistrationRequest {
     private String email;
 
     @NotBlank(message = "Please enter your password.")
-    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}", message = "Password must be 8-16 characters long and include uppercase, lowercase letters, numbers, and special characters.")
+    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?!.*\\s).{8,16}", message = "Password must be 8-16 characters long, and include both letters and numbers.")
     private String password;
 
     @NotBlank(message = "Please enter your name.")
