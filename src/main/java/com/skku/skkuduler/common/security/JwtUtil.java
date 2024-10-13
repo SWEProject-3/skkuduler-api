@@ -33,15 +33,20 @@ public class JwtUtil {
 
     // JWT에서 이메일 추출
     public String extractEmail(String token) {
+        String[] tokenized = token.split(" ");
+        if(tokenized.length > 1 && tokenized[0].equals("Bearer"))  token = tokenized[1];
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
 
     public String extractRole(String token){
+        String[] tokenized = token.split(" ");
+        if(tokenized.length > 1 && tokenized[0].equals("Bearer")) token = tokenized[1];
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
-
     }
 
     public Boolean isTokenExpired(String token) {
+        String[] tokenized = token.split(" ");
+        if(tokenized.length > 1 && tokenized[0].equals("Bearer")) token = tokenized[1];
         boolean isExpired;
         try {
             isExpired = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());

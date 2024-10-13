@@ -39,8 +39,10 @@ public class User extends BaseEntity {
         ADMIN,
         USER
     }
-    public void changeProfile(String email, String name){
+    public void changeEmail(String email){
         if(email != null) this.email = email;
+    }
+    public void changeName(String name){
         if(name != null) this.name = name;
     }
     public void changePassword(String newPassword) {
