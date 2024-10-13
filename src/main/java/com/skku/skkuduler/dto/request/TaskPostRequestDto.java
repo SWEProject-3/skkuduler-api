@@ -9,7 +9,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class TaskPostRequest {
+public class TaskPostRequestDto {
     private String title;
     private int priority; // 1-5
     private String createdBy;

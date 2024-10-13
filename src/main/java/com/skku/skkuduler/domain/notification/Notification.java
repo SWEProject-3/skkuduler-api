@@ -1,11 +1,12 @@
-package com.skku.skkuduler.domain;
+package com.skku.skkuduler.domain.notification;
 
+import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "notification")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,13 +15,9 @@ public class Notification extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long notificationId;
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private User user;
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "eventId")
-    private Event event;
+    private Long eventId;
 
     private String message;
 
@@ -28,7 +25,6 @@ public class Notification extends BaseEntity {
     private NotificationStatus status;
 
     enum NotificationStatus {
-        SENT,
         READ,
         UNREAD
     }

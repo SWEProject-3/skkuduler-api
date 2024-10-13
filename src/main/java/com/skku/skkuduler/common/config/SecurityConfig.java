@@ -3,6 +3,7 @@ package com.skku.skkuduler.common.config;
 import com.skku.skkuduler.common.security.JwtAuthenticationFilter;
 import com.skku.skkuduler.common.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,7 +22,8 @@ import java.util.Collections;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-
+    @Value("${spring.server.base.url}")
+    private String baseUrl;
     private final JwtUtil jwtUtil;
 
     @Bean
@@ -36,7 +38,7 @@ public class SecurityConfig {
 
                     CorsConfiguration configuration = new CorsConfiguration();
 
-                    configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+                    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", baseUrl));
                     configuration.setAllowedMethods(Collections.singletonList("*"));
                     configuration.setAllowCredentials(true);
                     configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -61,8 +63,9 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/models/**","/api/auth/register/**","/api/auth/**","/api/test/**","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","/api/posts/**","/api/follows/**","/api/users/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/models/**","/api/auth/register/**","/api/auth/**","/api/test/**","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","/api/users/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/likes/**","/api/auth/**","/api/test/**", "/api/ai/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/auth/**").permitAll()
                         .anyRequest().authenticated());
         //세션 설정
         http

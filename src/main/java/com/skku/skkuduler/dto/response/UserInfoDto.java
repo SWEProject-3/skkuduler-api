@@ -1,6 +1,6 @@
 package com.skku.skkuduler.dto.response;
 
-import com.skku.skkuduler.domain.User;
+import com.skku.skkuduler.domain.user.User.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,5 +14,5 @@ public class UserInfoDto {
     private Long userId;
     private String email;
     private String name;
-    private User.Role role;
+    private Role role;
 }

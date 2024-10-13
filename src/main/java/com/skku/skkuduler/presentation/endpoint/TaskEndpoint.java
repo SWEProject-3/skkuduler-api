@@ -1,14 +1,8 @@
 package com.skku.skkuduler.presentation.endpoint;
 
 import com.skku.skkuduler.application.TaskService;
-import com.skku.skkuduler.dto.response.TaskDetail;
-import com.skku.skkuduler.dto.request.TaskPostRequest;
-import com.skku.skkuduler.dto.response.TaskPostResponse;
-import com.skku.skkuduler.presentation.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

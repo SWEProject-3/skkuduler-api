@@ -1,11 +1,12 @@
-package com.skku.skkuduler.domain;
+package com.skku.skkuduler.domain.friendship;
 
+import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "friendship")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,13 +15,9 @@ public class Friendship extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long friendshipId;
 
-    @ManyToOne
-    @JoinColumn(name = "myId")
-    private User myId;
+    private Long fromUserId;
 
-    @ManyToOne
-    @JoinColumn(name = "friendId")
-    private User friendId;
+    private Long toUserId;
 
     @Enumerated(EnumType.STRING)
     private FriendshipStatus status;

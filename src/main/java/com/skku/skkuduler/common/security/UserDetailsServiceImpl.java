@@ -1,7 +1,7 @@
 package com.skku.skkuduler.common.security;
 
 import com.skku.skkuduler.common.exception.UserNotFoundException;
-import com.skku.skkuduler.domain.User;
+import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
