@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "friendship")
+@Table(
+        uniqueConstraints = @UniqueConstraint(columnNames = {"from_user_id", "to_user_id"})
+)
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
