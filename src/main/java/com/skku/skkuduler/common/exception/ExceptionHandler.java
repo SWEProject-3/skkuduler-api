@@ -42,7 +42,7 @@ public class ExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleGlobalException(UserNotFoundException ex) {
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.NOT_FOUND.value(),
                 "User Not Found Exception",
                 ex.getMessage()
         );
@@ -54,7 +54,7 @@ public class ExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ExceptionResponse> handleAuthorizeException(UnAuthorizedException ex) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.UNAUTHORIZED.value(),
                 "UnAuthorized Exception",
                 ex.getMessage()
         );
