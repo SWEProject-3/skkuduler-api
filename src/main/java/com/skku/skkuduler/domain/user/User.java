@@ -39,6 +39,9 @@ public class User extends BaseEntity {
         ADMIN,
         USER
     }
+    public static User of(Long userId){
+        return User.builder().userId(userId).build();
+    }
     public void changeEmail(String email){
         if(email != null) this.email = email;
     }

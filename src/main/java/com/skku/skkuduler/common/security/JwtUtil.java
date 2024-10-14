@@ -21,27 +21,18 @@ public class JwtUtil {
     }
 
     // JWT 생성
-    public String generateToken(String email, String role) {
+    public String generateToken(Long userId) {
         return Jwts.builder()
-                .claim("email",email)
-                .claim("role",role)
+                .claim("userId",userId)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // 10시간 유효
                 .signWith(secretKey)
                 .compact();
     }
-
-    // JWT에서 이메일 추출
-    public String extractEmail(String token) {
+    public Long extractUserId(String token) {
         String[] tokenized = token.split(" ");
         if(tokenized.length > 1 && tokenized[0].equals("Bearer"))  token = tokenized[1];
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
-    }
-
-    public String extractRole(String token){
-        String[] tokenized = token.split(" ");
-        if(tokenized.length > 1 && tokenized[0].equals("Bearer")) token = tokenized[1];
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
     }
 
     public Boolean isTokenExpired(String token) {

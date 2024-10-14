@@ -35,14 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String role = jwtUtil.extractRole(token);
-        String email = jwtUtil.extractEmail(token);
-
-        User user = User.builder()
-                .email(email)
-                .role(User.Role.valueOf(role))
-                .password("")
-                .build();
+        Long userId = jwtUtil.extractUserId(token);
+        User user = User.of(userId);
 
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
