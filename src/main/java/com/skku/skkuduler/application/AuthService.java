@@ -1,5 +1,6 @@
 package com.skku.skkuduler.application;
 
+import com.skku.skkuduler.common.exception.UnAuthorizedException;
 import com.skku.skkuduler.common.exception.UserNotFoundException;
 import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.domain.user.User;
@@ -33,19 +34,26 @@ public class AuthService {
     public String loginUser(UserLoginRequestDto loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(UserNotFoundException::new);
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return jwtUtil.generateToken(user.getEmail(), String.valueOf(user.getRole()));
+            return jwtUtil.generateToken(user.getUserId());
         }
         return null;
     }
     @Transactional(readOnly = true)
     public UserInfoDto checkToken(String token){
-        String email = jwtUtil.extractEmail(token);
-        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        Long userId = jwtUtil.extractUserId(token);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return UserInfoDto.builder()
                 .userId(user.getUserId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .role(user.getRole())
                 .build();
+    }
+    @Transactional
+    public void changePassword(String token, String oldPassword, String newPassword){
+        User user = userRepository.findById(jwtUtil.extractUserId(token)).orElseThrow(UserNotFoundException::new);
+        if(!passwordEncoder.matches(oldPassword, user.getPassword())) throw new UnAuthorizedException();
+        user.changePassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

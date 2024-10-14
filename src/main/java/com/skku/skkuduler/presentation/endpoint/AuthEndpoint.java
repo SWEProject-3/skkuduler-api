@@ -1,6 +1,7 @@
 package com.skku.skkuduler.presentation.endpoint;
 
 import com.skku.skkuduler.application.AuthService;
+import com.skku.skkuduler.dto.request.PasswordChangeDto;
 import com.skku.skkuduler.dto.request.UserLoginRequestDto;
 import com.skku.skkuduler.dto.request.UserRegistrationRequestDto;
 import com.skku.skkuduler.dto.response.UserInfoDto;
@@ -32,8 +33,16 @@ public class AuthEndpoint {
             return new ApiResponse<>(401, "User login failed");
         }
     }
+
     @GetMapping("/check-token")
-    public ApiResponse<UserInfoDto> checkToken(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
+    public ApiResponse<UserInfoDto> checkToken(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
         return new ApiResponse<>(authService.checkToken(token));
+    }
+
+    @PutMapping("/password")
+    public ApiResponse<Void> changePassword(@RequestBody @Valid PasswordChangeDto passwordChangeDto,
+                                            @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+        authService.changePassword(token, passwordChangeDto.getOldPassword(),passwordChangeDto.getNewPassword());
+        return new ApiResponse<>("Password Changed Successful");
     }
 }
