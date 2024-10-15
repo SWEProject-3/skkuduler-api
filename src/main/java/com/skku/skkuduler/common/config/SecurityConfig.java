@@ -63,8 +63,8 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/models/**","/api/auth/register/**","/api/auth/**","/api/test/**","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","/api/users/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/likes/**","/api/auth/**","/api/test/**", "/api/ai/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/test/**","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.POST ,"/api/auth/register", "/api/auth/login","/api/test/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/api/auth/**").permitAll()
                         .anyRequest().authenticated());
         //세션 설정
