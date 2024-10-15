@@ -2,11 +2,8 @@ package com.skku.skkuduler.application;
 
 import com.skku.skkuduler.common.exception.UserNotFoundException;
 import com.skku.skkuduler.domain.user.User;
-import com.skku.skkuduler.dto.response.DepartmentSummaryDto;
 import com.skku.skkuduler.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
