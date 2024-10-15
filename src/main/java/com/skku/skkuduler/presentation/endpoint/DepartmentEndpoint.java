@@ -4,6 +4,7 @@ import com.skku.skkuduler.application.DepartmentService;
 import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.dto.response.DepartmentSearchResponseDto;
 import com.skku.skkuduler.presentation.ApiResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,16 +12,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/departments")
 public class DepartmentEndpoint {
 
     private final DepartmentService departmentService;
     private final JwtUtil jwtUtil;
-
-    public DepartmentEndpoint(DepartmentService departmentService, JwtUtil jwtUtil) {
-        this.departmentService = departmentService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @GetMapping
     public ApiResponse<Page<DepartmentSearchResponseDto>> getDepartments(@RequestParam(name = "page", defaultValue = "0") int page,
@@ -34,4 +31,5 @@ public class DepartmentEndpoint {
             return new ApiResponse<>(departmentService.searchDepartmentsByUser(query,pageable, userId));
         }
     }
+
 }

@@ -2,6 +2,7 @@ package com.skku.skkuduler.infrastructure;
 
 import com.skku.skkuduler.domain.department.Department;
 import com.skku.skkuduler.dto.response.DepartmentSearchResponseDto;
+import com.skku.skkuduler.dto.response.DepartmentSummaryDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,4 +37,14 @@ public interface DepartmentRepository extends JpaRepository<Department,Long> {
     """
     )
     Page<DepartmentSearchResponseDto> findAllDepartmentsByUserId(Pageable pageable, @Param("userId") Long userId);
+
+    @Query("""
+    SELECT DISTINCT new com.skku.skkuduler.dto.response.DepartmentSummaryDto(
+        d.departmentId,
+        d.name
+    )
+    FROM department d
+    INNER JOIN subscription s ON s.departmentId = d.departmentId AND s.user.userId = :userId
+    """)
+    Page<DepartmentSummaryDto> findDepartmentsSubscribedByUser(Long userId, Pageable pageable);
 }
