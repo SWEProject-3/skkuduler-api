@@ -37,22 +37,31 @@ public class ExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(UserNotFoundException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler({UserNotFoundException.class, DepartmentNotFoundException.class, SubscriptionNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ExceptionResponse> handleGlobalException(UserNotFoundException ex) {
-
+    public ResponseEntity<ExceptionResponse> handleGlobalException(Exception ex) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 HttpStatus.NOT_FOUND.value(),
-                "User Not Found Exception",
+                "Not Found Exception",
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+    @org.springframework.web.bind.annotation.ExceptionHandler({DuplicatedException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ExceptionResponse> handleBadRequestException(Exception ex) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request Exception",
                 ex.getMessage()
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
-
     @org.springframework.web.bind.annotation.ExceptionHandler(UnAuthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<ExceptionResponse> handleAuthorizeException(UnAuthorizedException ex) {
+    public ResponseEntity<ExceptionResponse> handleAuthorizeException(Exception ex) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 HttpStatus.UNAUTHORIZED.value(),
                 "UnAuthorized Exception",

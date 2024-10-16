@@ -51,8 +51,8 @@ public class User extends BaseEntity {
         subscriptions.add(new Subscription(null, departmentId, this));
     }
 
-    public void unsubscribeDepartment(Long departmentId){
-        subscriptions.removeIf(subscription -> subscription.getDepartmentId().equals(departmentId));
+    public boolean unsubscribeDepartment(Long departmentId){
+        return subscriptions.removeIf(subscription -> subscription.getDepartmentId().equals(departmentId));
     }
 
     public void changeEmail(String email) {
