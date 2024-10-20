@@ -3,7 +3,8 @@ package com.skku.skkuduler.presentation.endpoint;
 
 import com.skku.skkuduler.application.DepartmentService;
 import com.skku.skkuduler.application.UserService;
-import com.skku.skkuduler.common.exception.UnAuthorizedException;
+import com.skku.skkuduler.common.exception.Error;
+import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.dto.response.DepartmentSummaryDto;
 import com.skku.skkuduler.presentation.ApiResponse;
@@ -35,7 +36,7 @@ public class UserEndpoint {
     public ApiResponse<Void> subscribeDepartment(@PathVariable("userId") Long userId,
                                                  @PathVariable("departmentId") Long departmentId,
                                                  @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        if (!userId.equals(jwtUtil.extractUserId(token))) throw new UnAuthorizedException();
+        if (!userId.equals(jwtUtil.extractUserId(token))) throw new ErrorException(Error.PERMISSION_DENIED);
         userService.subscribeDepartment(userId, departmentId);
         return new ApiResponse<>("Subscribed successfully");
     }
@@ -44,7 +45,7 @@ public class UserEndpoint {
     public ApiResponse<Void> unsubscribeDepartment(@PathVariable("userId") Long userId,
                                                    @PathVariable("departmentId") Long departmentId,
                                                    @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        if (!userId.equals(jwtUtil.extractUserId(token))) throw new UnAuthorizedException();
+        if (!userId.equals(jwtUtil.extractUserId(token))) throw new ErrorException(Error.PERMISSION_DENIED);
         userService.unsubscribeDepartment(userId, departmentId);
         return new ApiResponse<>("Unsubscribed successfully");
     }

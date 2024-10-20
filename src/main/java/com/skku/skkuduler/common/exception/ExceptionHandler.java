@@ -2,94 +2,49 @@ package com.skku.skkuduler.common.exception;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.util.List;
-
 
 @ControllerAdvice
 public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ExceptionResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
 
-        List<String> errors = ex.getBindingResult().getAllErrors().stream()
-                .map(error -> {
-                    if (error instanceof FieldError) {
-                        return ((FieldError) error).getField() + ": " + error.getDefaultMessage();
-                    } else {
-                        return error.getDefaultMessage() != null ? error.getDefaultMessage() : "Unknown Error";
-                    }
-                }).toList();
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Arguments Not Valid Exception",
-                errors
+        ErrorDTO errorDTO = new ErrorDTO(
+                Error.INVALID_FIELD.getStatus(),
+                Error.INVALID_FIELD.getMsg(),
+                Error.INVALID_FIELD.getCode()
         );
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        return ResponseEntity.status(errorDTO.getStatus()).body(errorDTO);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler({UserNotFoundException.class, DepartmentNotFoundException.class, SubscriptionNotFoundException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ExceptionResponse> handleGlobalException(Exception ex) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(
-                HttpStatus.NOT_FOUND.value(),
-                "Not Found Exception",
-                ex.getMessage()
+    @org.springframework.web.bind.annotation.ExceptionHandler(ErrorException.class)
+    public ResponseEntity<ErrorDTO> handleCustomErrorException(ErrorException e) {
+        Error error = e.getError();
+        ErrorDTO errorDTO = new ErrorDTO(
+                error.getStatus(),
+                error.getMsg(),
+                error.getCode()
         );
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
-    }
-    @org.springframework.web.bind.annotation.ExceptionHandler({DuplicatedException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ExceptionResponse> handleBadRequestException(Exception ex) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request Exception",
-                ex.getMessage()
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-    @org.springframework.web.bind.annotation.ExceptionHandler(UnAuthorizedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<ExceptionResponse> handleAuthorizeException(Exception ex) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(
-                HttpStatus.UNAUTHORIZED.value(),
-                "UnAuthorized Exception",
-                ex.getMessage()
-        );
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+        return ResponseEntity.status(errorDTO.getStatus()).body(errorDTO);
     }
 
     @Setter
     @Getter
-    public static class ExceptionResponse {
+    public static class ErrorDTO {
         private int status;
-        private String message;
-        private String error;
-        private List<String> errors;
+        private String code;
+        private String msg;
 
-        public ExceptionResponse(int status, String message, String error) {
+        public ErrorDTO(int status, String msg, String code) {
             this.status = status;
-            this.message = message;
-            this.error = error;
+            this.msg = msg;
+            this.code = code;
         }
-
-        public ExceptionResponse(int status, String message, List<String> errors) {
-            this.status = status;
-            this.message = message;
-            this.errors = errors;
-        }
-
     }
 }
