@@ -1,6 +1,5 @@
 package com.skku.skkuduler.domain.calender;
 
-import com.skku.skkuduler.domain.event.Event;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +15,9 @@ public class CalenderEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long calenderEventId;
 
-    private Long eventId;
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "event_id")
+    private Event event;
 
     @ManyToOne
     @JoinColumn(name = "calender_id")

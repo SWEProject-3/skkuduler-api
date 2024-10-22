@@ -1,4 +1,4 @@
-package com.skku.skkuduler.domain.event;
+package com.skku.skkuduler.domain.calender;
 
 import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
