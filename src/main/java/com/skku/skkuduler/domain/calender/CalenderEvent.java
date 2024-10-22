@@ -1,5 +1,6 @@
 package com.skku.skkuduler.domain.calender;
 
+import com.skku.skkuduler.domain.event.Event;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
