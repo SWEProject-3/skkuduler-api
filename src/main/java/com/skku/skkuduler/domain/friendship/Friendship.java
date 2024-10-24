@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Friendship extends BaseEntity {
+public class Friendship{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long friendshipId;
