@@ -6,6 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "calender_event")
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"event_id", "calender_id"})
+        }
+)
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

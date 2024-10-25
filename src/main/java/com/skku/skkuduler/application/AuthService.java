@@ -55,4 +55,14 @@ public class AuthService {
         user.changePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+    //TODO : calender가 isGlobal일때 -> 구독 했는지? isGlobal아닐때 -> userId가 calender.getUserId과 같은지 or 주인과 다르다면 친구가 맞는지?
+    @Transactional(readOnly = true)
+    public void checkAuthForReadingCalender(Long calenderId, Long userId) {
+
+    }
+    //TODO : calender가 isGlobal일때 -> admin이고, permission이있는지? , isGlobal이 아닐때 -> userId가 calender.getUserId와 같은지?
+    @Transactional(readOnly = true)
+    public void checkAuthForWritingCalender(Long calenderId, Long userId){
+
+    }
 }
