@@ -30,7 +30,6 @@ public class Event{
 
     private LocalDate endDate;
 
-
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Image> images;
 
