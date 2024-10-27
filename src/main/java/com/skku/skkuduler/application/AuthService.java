@@ -6,6 +6,7 @@ import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.dto.request.UserLoginRequestDto;
 import com.skku.skkuduler.dto.request.UserRegistrationRequestDto;
+import com.skku.skkuduler.dto.response.LoginSuccessDto;
 import com.skku.skkuduler.dto.response.UserInfoDto;
 import com.skku.skkuduler.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +31,10 @@ public class AuthService {
         userRepository.save(user);
     }
     @Transactional(readOnly = true)
-    public String loginUser(UserLoginRequestDto loginRequest) {
+    public LoginSuccessDto loginUser(UserLoginRequestDto loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return jwtUtil.generateToken(user.getUserId());
+            return new LoginSuccessDto(jwtUtil.generateToken(user.getUserId()), user.getUserId());
         }
         return null;
     }

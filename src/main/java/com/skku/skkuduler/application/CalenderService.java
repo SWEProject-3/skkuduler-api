@@ -34,9 +34,7 @@ public class CalenderService {
         return calenderRepository.findAllUserCalendersToCalenderInfoDto(userId);
     }
     @Transactional(readOnly = true)
-    public List<CalenderInfoDto> loadDepartmentCalenders(Long departmentId, Long viewerId) {
-        User viewer = userRepository.findById(viewerId).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));
-        if (!viewer.isSubscribed(departmentId)) throw new ErrorException(Error.NOT_SUBSCRIBED);
+    public List<CalenderInfoDto> loadDepartmentCalenders(Long departmentId) {
         return calenderRepository.findAllDeptCalendersToCalenderInfoDto(departmentId);
     }
 

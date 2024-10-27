@@ -37,7 +37,7 @@ public class CalenderEndpoint {
         if (userId != null) { // 해당 userId의 달력을 전부 가져옴 userId
             response = calenderService.loadUserCalenders(userId, viewerId);
         } else if (departmentId != null) { //해당 학과의 달력을 전부 가져옴
-            response = calenderService.loadDepartmentCalenders(departmentId, viewerId);
+            response = calenderService.loadDepartmentCalenders(departmentId);
         } else {
             //URL 파라미터가 존재하지 않을 경우
             throw new ErrorException(Error.INVALID_URL_PARAMETERS);
