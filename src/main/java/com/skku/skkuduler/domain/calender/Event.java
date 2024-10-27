@@ -1,8 +1,9 @@
-package com.skku.skkuduler.domain.event;
+package com.skku.skkuduler.domain.calender;
 
 import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,9 +12,10 @@ import java.util.List;
 
 @Entity(name = "event")
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Event extends BaseEntity {
+public class Event{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long eventId;
@@ -22,16 +24,14 @@ public class Event extends BaseEntity {
 
     private String content;
 
-    private Long departmentId;
-
-    private Long userId;
-
-    private boolean isGlobal;
+    private String colorCode;
 
     private LocalDate startDate;
 
     private LocalDate endDate;
 
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Image> images;
+
 }

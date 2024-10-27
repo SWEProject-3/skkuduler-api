@@ -1,13 +1,15 @@
-package com.skku.skkuduler.domain.event;
+package com.skku.skkuduler.domain.calender;
 
 import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "image")
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Image extends BaseEntity {

@@ -51,6 +51,10 @@ public class User extends BaseEntity {
         subscriptions.add(new Subscription(null, departmentId, this));
     }
 
+    public boolean isSubscribed(Long departmentId){
+        return subscriptions.stream().anyMatch(subscription -> subscription.getDepartmentId().equals(departmentId));
+    }
+
     public boolean unsubscribeDepartment(Long departmentId){
         return subscriptions.removeIf(subscription -> subscription.getDepartmentId().equals(departmentId));
     }

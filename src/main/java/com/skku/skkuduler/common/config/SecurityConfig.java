@@ -92,7 +92,7 @@ public class SecurityConfig {
         return web -> {
             web.ignoring()
                     .requestMatchers(HttpMethod.POST,  "/api/auth/**", "/api/test/**")
-                    .requestMatchers(HttpMethod.GET, "/error/**", "/api/auth/**");
+                    .requestMatchers(HttpMethod.GET, "/error/**", "/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html");
         };
     }
 }
