@@ -41,4 +41,10 @@ public class AuthEndpoint {
         authService.changePassword(token, passwordChangeDto.getOldPassword(),passwordChangeDto.getNewPassword());
         return new ApiResponse<>("Password Changed Successful");
     }
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logoutUser(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+        authService.logoutUser(token);
+        return new ApiResponse<>(200, "User logged out successfully");
+    }
 }

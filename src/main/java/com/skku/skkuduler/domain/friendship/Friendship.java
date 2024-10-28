@@ -1,9 +1,11 @@
 package com.skku.skkuduler.domain.friendship;
 
 import com.skku.skkuduler.domain.BaseEntity;
+import com.skku.skkuduler.domain.friendship.FriendshipStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "friendship")
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
         uniqueConstraints = @UniqueConstraint(columnNames = {"from_user_id", "to_user_id"})
 )
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Friendship{
@@ -25,9 +28,4 @@ public class Friendship{
     @Enumerated(EnumType.STRING)
     private FriendshipStatus status;
 
-    enum FriendshipStatus {
-        PENDING,
-        ACCEPTED,
-        REJECTED
-    }
 }

@@ -1,5 +1,6 @@
 package com.skku.skkuduler.common.security;
 
+import com.skku.skkuduler.application.AuthService;
 import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.domain.user.User;
 import jakarta.servlet.FilterChain;
@@ -21,10 +22,12 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final AuthService authService;
     private final HandlerExceptionResolver resolver;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, AuthService authService, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         this.jwtUtil = jwtUtil;
+        this.authService = authService;
         this.resolver = resolver;
     }
 
@@ -33,21 +36,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String token= request.getHeader("Authorization");
-        System.out.println("token = " + token);
-        try {
-            jwtUtil.validateToken(token);
-        }catch (ErrorException e){
-            resolver.resolveException(request,response,null,e);
-            return;
+        if(token!= null && token.startsWith("Bearer ")) {
+            token = token.substring(7); // "Bearer " 접두사를 제거
+
+            // 블랙리스트 확인
+            if (authService.isTokenBlacklisted(token)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드 반환
+                return;
+            }
+
+            System.out.println("token = " + token);
+            try {
+                jwtUtil.validateToken(token);
+            }catch (ErrorException e){
+                resolver.resolveException(request,response,null,e);
+                return;
+            }
+            Long userId = jwtUtil.extractUserId(token);
+            User user = User.of(userId);
+
+            CustomUserDetails customUserDetails = new CustomUserDetails(user);
+
+            Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+
         }
-        Long userId = jwtUtil.extractUserId(token);
-        User user = User.of(userId);
-
-        CustomUserDetails customUserDetails = new CustomUserDetails(user);
-
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-
         filterChain.doFilter(request, response);
     }
 }

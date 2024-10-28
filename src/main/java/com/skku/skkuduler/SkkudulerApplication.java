@@ -12,8 +12,8 @@ import static org.springframework.data.web.config.EnableSpringDataWebSupport.Pag
 @SpringBootApplication
 public class SkkudulerApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(SkkudulerApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(SkkudulerApplication.class, args);
+	}
 
 }
