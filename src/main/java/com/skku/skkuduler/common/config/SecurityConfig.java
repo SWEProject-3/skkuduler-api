@@ -20,6 +20,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
@@ -44,7 +46,8 @@ public class SecurityConfig {
 
                     CorsConfiguration configuration = new CorsConfiguration();
 
-                    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", baseUrl));
+//                    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", baseUrl));
+                    configuration.addAllowedOrigin("*");
                     configuration.setAllowedMethods(Collections.singletonList("*"));
                     configuration.setAllowCredentials(true);
                     configuration.setAllowedHeaders(Collections.singletonList("*"));
