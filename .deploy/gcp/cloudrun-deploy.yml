@@ -11,7 +11,8 @@ steps:
       - 'SPRING_DATASOURCE_PASSWORD=${_SPRING_DATASOURCE_PASSWORD}'
       - 'SPRING_JWT_SECRET=${_SPRING_JWT_SECRET}'
       - 'SPRING_SERVER_BASE_URL=${_SPRING_SERVER_BASE_URL}'
-
+    secretEnv:
+      - 'GOOGLE_CLOUD_CREDENTIALS'
   # docker BUILD
   - name: 'gcr.io/cloud-builders/docker'
     args:
@@ -54,6 +55,11 @@ images:
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+availableSecrets:
+  secretManager:
+    - versionName: 'projects/111252827217/secrets/GOOGLE_CLOUD_CREDENTIALS/versions/latest'
+      env: 'GOOGLE_CLOUD_CREDENTIALS'
 
 
 

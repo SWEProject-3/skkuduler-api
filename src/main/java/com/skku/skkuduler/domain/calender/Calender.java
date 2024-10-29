@@ -33,7 +33,7 @@ public class Calender {
     private Long departmentId;
 
     @Column(updatable = false)
-    private boolean isGlobal;
+    private Boolean isGlobal;
 
     @OneToMany(mappedBy = "calender", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CalenderEvent> calenderEvents = new ArrayList<>();

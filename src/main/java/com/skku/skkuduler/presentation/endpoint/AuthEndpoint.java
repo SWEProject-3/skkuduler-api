@@ -1,6 +1,9 @@
 package com.skku.skkuduler.presentation.endpoint;
 
+import com.skku.skkuduler.application.AccountService;
 import com.skku.skkuduler.application.AuthService;
+import com.skku.skkuduler.common.exception.Error;
+import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.dto.request.PasswordChangeDto;
 import com.skku.skkuduler.dto.request.UserLoginRequestDto;
 import com.skku.skkuduler.dto.request.UserRegistrationRequestDto;
@@ -17,20 +20,20 @@ import org.springframework.web.bind.annotation.*;
 public class AuthEndpoint {
 
     private final AuthService authService;
-
+    private final AccountService accountService;
     @PostMapping("/register")
     public ApiResponse<String> registerUser(@RequestBody @Valid UserRegistrationRequestDto userRequest) {
-        authService.registerUser(userRequest);
+        accountService.registerUser(userRequest);
         return new ApiResponse<>(200, "User registered successfully");
     }
 
     @PostMapping("/login")
     public ApiResponse<String> loginUser(@RequestBody UserLoginRequestDto loginRequest) {
-        String token = authService.loginUser(loginRequest);
+        String token = accountService.loginUser(loginRequest);
         if (token != null) {
             return new ApiResponse<>(200, "User login successfully", token);
         } else {
-            return new ApiResponse<>(401, "User login failed");
+            throw new ErrorException(Error.LOGIN_FAILED);
         }
     }
 
@@ -42,7 +45,7 @@ public class AuthEndpoint {
     @PutMapping("/password")
     public ApiResponse<Void> changePassword(@RequestBody @Valid PasswordChangeDto passwordChangeDto,
                                             @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        authService.changePassword(token, passwordChangeDto.getOldPassword(),passwordChangeDto.getNewPassword());
+        accountService.changePassword(token, passwordChangeDto.getOldPassword(),passwordChangeDto.getNewPassword());
         return new ApiResponse<>("Password Changed Successful");
     }
 }

@@ -12,6 +12,7 @@ public enum Error {
     INVALID_UNSUBSCRIPTION(400, "400_002", "구독하지 않은 학과를 구독 취소 할 수 없습니다."),
     DUPLICATE_EMAIL(400,"400_003", "중복된 이메일 입니다."),
     INVALID_URL_PARAMETERS(400, "400_004","잘못된 URL 파라미터 형식입니다"),
+    EVENT_ALREADY_EXISTS(400, "400_005" , "해당 일정이 이미 존재합니다."), //TODO
     //401,
     LOGIN_FAILED(401, "401_000", "로그인에 실패하였습니다."),
     PERMISSION_DENIED(401, "401_001", "접근 권한이 없습니다."),
@@ -24,7 +25,9 @@ public enum Error {
     EVENT_NOT_FOUND(404,"404_000", "해당 일정을 찾을 수 없습니다."),
     USER_NOT_FOUND(404,"404_001", "해당 유저를 찾을 수 없습니다."),
     DEPARTMENT_NOT_FOUND(404,"404_002" , "해당 학과를 찾을 수 없습니다."),
-    CALENDER_NOT_FOUND(404,"404_003", "해당 달력을 찾을 수 없습니다.");
+    CALENDER_NOT_FOUND(404,"404_003", "해당 달력을 찾을 수 없습니다."),
+    //500
+    FILE_STORE_ERROR(500, "500,000","파일 저장에 실패하였습니다.");
 
     private final int status;
     private final String code;
