@@ -27,6 +27,7 @@ public class CalenderEndpoint {
     private final CalenderService calenderService;
     private final AuthService authService;
 
+    //TODO 친구인지 체크
     @GetMapping
     public ApiResponse<List<CalenderInfoDto>> getCalenders(@RequestParam(required = false, name = "userId") Long userId,
                                                            @RequestParam(required = false, name = "departmentId") Long departmentId,
@@ -34,6 +35,7 @@ public class CalenderEndpoint {
         List<CalenderInfoDto> response;
         Long viewerId = jwtUtil.extractUserId(token);
         if (userId != null) { // 해당 userId의 달력을 전부 가져옴 userId
+            // 친구 인지 체크
             response = calenderService.loadUserCalenders(userId);
         } else if (departmentId != null) { //해당 학과의 달력을 전부 가져옴
             response = calenderService.loadDepartmentCalenders(departmentId);
@@ -75,7 +77,7 @@ public class CalenderEndpoint {
         return new ApiResponse<>("달력이 성공적으로 삭제 되었습니다.");
     }
 
-    // 일정범위내의 일정 반환하기.
+    // 일정범위내의 일정 반환하기. -> 만약 endDate가 range 넘어가면, 그 range끝으로 맞추기
     @GetMapping("/{calenderId}/events")
     public ApiResponse<List<EventSummaryDto>> getsCalenderEvents(@PathVariable("calenderId") Long calenderId,
                                                                  @RequestParam(value = "rangeSearch", defaultValue = "false") boolean rangeSearch,
@@ -91,6 +93,7 @@ public class CalenderEndpoint {
             endDate = yearMonth.atEndOfMonth();
         } else {
             if (startDate == null || endDate == null) throw new ErrorException(Error.INVALID_URL_PARAMETERS);
+            if (startDate.isAfter(endDate)) throw new ErrorException(Error.INVALID_DATE_RANGE);
         }
         return new ApiResponse<>(calenderService.getEventsBetween(calenderId, startDate, endDate));
     }

@@ -77,7 +77,7 @@ public class CalenderService {
                                 event.getTitle(),
                                 event.getColorCode(),
                                 event.getStartDate(),
-                                event.getEndDate()
+                                event.getEndDate().isAfter(endDate) ? endDate : event.getEndDate()
                         )
         ).toList();
     }
@@ -125,7 +125,9 @@ public class CalenderService {
     public void deleteUserCalenderEvent(Long calenderId, Long eventId) {
         Calender calender = calenderRepository.findById(calenderId).orElseThrow(() -> new ErrorException(Error.CALENDER_NOT_FOUND));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
-        System.out.println(calender.removeEvent(event));
+        if(!calender.removeEvent(event)){
+            throw new ErrorException(Error.INVALID_REMOVAL_CALENDER_EVENT);
+        };
         calenderRepository.save(calender);
         if (event.getIsUserEvent() && event.getUserId().equals(calender.getUserId())) {
             eventRepository.delete(event);

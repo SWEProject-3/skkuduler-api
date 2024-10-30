@@ -12,7 +12,9 @@ public enum Error {
     INVALID_UNSUBSCRIPTION(400, "400_002", "구독하지 않은 학과를 구독 취소 할 수 없습니다."),
     DUPLICATE_EMAIL(400,"400_003", "중복된 이메일 입니다."),
     INVALID_URL_PARAMETERS(400, "400_004","잘못된 URL 파라미터 형식입니다"),
-    EVENT_ALREADY_EXISTS(400, "400_005" , "해당 일정이 이미 존재합니다."), //TODO
+    EVENT_ALREADY_EXISTS(400, "400_005" , "해당 일정이 이미 존재합니다."),
+    INVALID_REMOVAL_CALENDER_EVENT(400,"400_006", "해당 일정이 추가되어있지 않아 삭제를 할 수 없습니다."),
+    INVALID_DATE_RANGE(400, "400_007", "일정의 시작과 끝이 올바르게 설정되지 않았습니다."),
     //401,
     LOGIN_FAILED(401, "401_000", "로그인에 실패하였습니다."),
     PERMISSION_DENIED(401, "401_001", "접근 권한이 없습니다."),
