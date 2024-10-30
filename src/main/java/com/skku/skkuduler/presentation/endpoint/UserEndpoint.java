@@ -28,7 +28,6 @@ public class UserEndpoint {
     public ApiResponse<Page<DepartmentSummaryDto>> getSubscribedDepartments(@PathVariable("userId") Long userId,
                                                                             @RequestParam(value = "page", defaultValue = "0") int page,
                                                                             @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        // 친구가 아니거나 내 목록을 조회하지 않을시 exception 발생 로직 추가
         Pageable pageable = PageRequest.of(page,10);
         return new ApiResponse<>(departmentService.getSubscribedDepartments(userId,pageable));
     }
