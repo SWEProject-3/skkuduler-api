@@ -34,15 +34,14 @@ public class JwtUtil {
         }catch (Exception e){
             throw new ErrorException(Error.WRONG_TOKEN);
         }
-
     }
 
     public Long extractUserId(String bearer) {
-        String token = bearer.split(" ")[1];
+        System.out.println(bearer);
+        String token = bearer.split(" ")[bearer.split(" ").length - 1];
+        System.out.println(token);
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
     }
-
-
 
     public String generateToken(Long userId) {
         return Jwts.builder()

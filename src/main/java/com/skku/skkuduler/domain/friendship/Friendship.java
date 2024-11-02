@@ -1,7 +1,6 @@
 package com.skku.skkuduler.domain.friendship;
 
 import com.skku.skkuduler.domain.BaseEntity;
-import com.skku.skkuduler.domain.friendship.FriendshipStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +24,14 @@ public class Friendship{
 
     private Long toUserId;
 
+    public enum FriendshipStatus {
+        PENDING,   // 친구 요청 대기 중
+        ACCEPTED,  // 친구 요청 수락
+        REJECTED   // 친구 요청 거절
+    }
+
     @Enumerated(EnumType.STRING)
     private FriendshipStatus status;
+
 
 }

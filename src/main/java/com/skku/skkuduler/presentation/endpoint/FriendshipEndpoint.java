@@ -1,14 +1,18 @@
 package com.skku.skkuduler.presentation.endpoint;
 
 import com.skku.skkuduler.application.FriendshipService;
+import com.skku.skkuduler.common.exception.Error;
+import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.common.security.JwtUtil;
-import com.skku.skkuduler.domain.friendship.FriendshipStatus;
+import com.skku.skkuduler.domain.friendship.Friendship.FriendshipStatus;
+import com.skku.skkuduler.dto.response.FriendshipResponseDto;
 import com.skku.skkuduler.presentation.ApiResponse;
 import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.dto.request.FriendshipRequestDto;
 import com.skku.skkuduler.infrastructure.UserRepository;
 import com.skku.skkuduler.domain.friendship.Friendship;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpHeaders;
@@ -26,112 +30,103 @@ public class FriendshipEndpoint {
 
     //1. 친구 조회
     @GetMapping("/friends")
-    public ResponseEntity<List<Friendship>> getAcceptedFriendRequests(
+    public ApiResponse<List<FriendshipResponseDto>> getAcceptedFriendRequests(
             @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
 
-        Long userId = extractUserIdFromToken(token);
-        List<Friendship> acceptedRequests = friendshipService.getFriendRequestsByStatus(userId, FriendshipStatus.ACCEPTED);
-        return ResponseEntity.ok(acceptedRequests);
+        Long userId = jwtUtil.extractUserId(token);
+        List<FriendshipResponseDto> acceptedRequests = friendshipService.getFriendRequestsByStatus(userId, FriendshipStatus.ACCEPTED);
+
+        return new ApiResponse<>(acceptedRequests);
     }
 
     // 2. 친구 요청 보내기
     @PostMapping("/request")
-    public ResponseEntity<String> sendFriendRequest(@RequestBody FriendshipRequestDto request,
+    public ApiResponse<String> sendFriendRequest(@RequestBody FriendshipRequestDto request,
                                                     @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
 
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7); // "Bearer " 접두사를 제거
-        }
-
         Long userIdFromToken = jwtUtil.extractUserId(token);
-        if (!userIdFromToken.equals(request.getFromUserId())) {
-            return ResponseEntity.status(403).body("You are not authorized to send this friend request.");
-        }
 
+        if (!userIdFromToken.equals(request.getFromUserId())) {
+            return new ApiResponse<>(400, "You are not authorized to send this friend request.");
+        }
 
         // fromUserId와 toUserId로 User 객체 조회
         User fromUser = userRepository.findById(request.getFromUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + request.getFromUserId()));
+                .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));
         User toUser = userRepository.findById(request.getToUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + request.getToUserId()));
+                .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));
 
-        try {
-            // 친구 요청 보내기
-            Friendship friendship = friendshipService.sendFriendRequest(fromUser, toUser);
-            return ResponseEntity.ok("Friend request sent successfully with status: " + friendship.getStatus());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        // 친구 요청 보내기
+        FriendshipResponseDto friendship = friendshipService.sendFriendRequest(fromUser, toUser);
+        return new ApiResponse<>("Friend request sent successfully");
+
     }
 
 
 
     // 3. PENDING중인 친구요청 철회
-    @DeleteMapping("/{friendshipId}/cancel")
-    public ResponseEntity<String> cancelPendingFriendRequest(
+    @PostMapping("/{friendshipId}/cancellation")
+    public ApiResponse<String> cancelPendingFriendRequest(
             @PathVariable Long friendshipId,
             @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
 
-        Long userId = extractUserIdFromToken(token);
+        Long userIdFromToken = jwtUtil.extractUserId(token);
 
         try {
-            friendshipService.cancelPendingFriendRequest(friendshipId, userId);
-            return ResponseEntity.ok("Friend request canceled successfully.");
+            friendshipService.cancelPendingFriendRequest(friendshipId, userIdFromToken);
+            return new ApiResponse<>("Friend request canceled successfully.");
         } catch (IllegalStateException | IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return new ApiResponse<>(400, "Friend request cancellation failed.");
         }
     }
 
     // 4-1 내가 보낸 친구요청 조회하기
     @GetMapping("/sent_requests")
-    public ResponseEntity<List<Friendship>> getFriendRequestsSentByUser(
+    public ApiResponse<List<FriendshipResponseDto>> getFriendRequestsSentByUser(
             @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
 
-        Long userId = extractUserIdFromToken(token);
-        List<Friendship> sentRequests = friendshipService.getFriendRequestsSentByUser(userId);
-        return ResponseEntity.ok(sentRequests);
+        Long userId = jwtUtil.extractUserId(token);
+        List<FriendshipResponseDto> sentRequests = friendshipService.getFriendRequestsSentByUser(userId);
+        return new ApiResponse<>(sentRequests);
     }
     // 4-2 내가 받은 친구요청 조회하기
     @GetMapping("/received_requests")
-    public ResponseEntity<List<Friendship>> getFriendRequestsReceivedByUser(
+    public ApiResponse<List<FriendshipResponseDto>> getFriendRequestsReceivedByUser(
             @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
 
-        Long userId = extractUserIdFromToken(token);
-        List<Friendship> receivedRequests = friendshipService.getFriendRequestsReceivedByUser(userId);
-        return ResponseEntity.ok(receivedRequests);
+        Long userId = jwtUtil.extractUserId(token);
+        List<FriendshipResponseDto> receivedRequests = friendshipService.getFriendRequestsReceivedByUser(userId);
+        return new ApiResponse<>(receivedRequests);
     }
 
     // 5. 친구요청 수락하기
-    @PostMapping("/{friendshipId}/accept")
-    public ResponseEntity<String> acceptFriendRequest(
+    @PostMapping("/{friendshipId}/acceptance")
+    public ApiResponse<String> acceptFriendRequest(
             @PathVariable Long friendshipId,
-            @RequestHeader(name=HttpHeaders.AUTHORIZATION) String token) {
-        Long userIdFromToken = extractUserIdFromToken(token);
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
 
-        Friendship friendship = friendshipService.findFriendshipById(friendshipId);
+        Long userIdFromToken = jwtUtil.extractUserId(token);
+        FriendshipResponseDto friendship = friendshipService.findFriendshipById(friendshipId);
 
         if (!friendship.getToUserId().equals(userIdFromToken)) {
-            return ResponseEntity.status(403).body("You are not authorized to accept this friend request.");
+            return new ApiResponse<>("You are not authorized to accept this friend request.");
         }
 
-        friendship = friendshipService.acceptFriendRequest(friendshipId);
-        return ResponseEntity.ok("Friend request accepted with status: " + friendship.getStatus());
+        FriendshipResponseDto acceptedFriendship = friendshipService.acceptFriendRequest(friendshipId);
+        String message = "Friend request accepted with status: " + acceptedFriendship.getStatus();
+        return new ApiResponse<>(HttpStatus.OK.value(), message);
     }
 
     // 6. 친구요청 거절하기
-    @PostMapping("/{friendshipId}/reject")
-    public ResponseEntity<String> rejectFriendRequest(@PathVariable Long friendshipId) {
-        Friendship friendship = friendshipService.rejectFriendRequest(friendshipId);
-        return ResponseEntity.ok("Friend request rejected with status: " + friendship.getStatus());
+    @PostMapping("/{friendshipId}/rejection")
+    public ApiResponse<String> rejectFriendRequest(@PathVariable Long friendshipId) {
+        FriendshipResponseDto rejectedFriendship = friendshipService.rejectFriendRequest(friendshipId);
+        String message = "Friend request rejected Successfully" + rejectedFriendship.getStatus();
+        return new ApiResponse<>(HttpStatus.OK.value(), message);
     }
 
     // JWT 토큰에서 userId를 추출하는 헬퍼 메서드
-    private Long extractUserIdFromToken(String token) {
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7); // "Bearer " 접두사를 제거
-        }
-        return jwtUtil.extractUserId(token);
-    }
+
 
 //    @GetMapping("/pending")
 //    public ResponseEntity<List<Friendship>> getPendingFriendRequests(

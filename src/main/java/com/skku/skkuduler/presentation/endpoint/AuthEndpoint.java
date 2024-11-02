@@ -45,6 +45,6 @@ public class AuthEndpoint {
     @PostMapping("/logout")
     public ApiResponse<Void> logoutUser(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
         authService.logoutUser(token);
-        return new ApiResponse<>(200, "User logged out successfully");
+        return new ApiResponse<>("User logged out successfully");
     }
 }

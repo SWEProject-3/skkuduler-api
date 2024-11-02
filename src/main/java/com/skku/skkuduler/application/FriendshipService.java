@@ -2,14 +2,17 @@ package com.skku.skkuduler.application;
 
 import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.domain.friendship.Friendship;
-import com.skku.skkuduler.domain.friendship.FriendshipStatus;
-import com.skku.skkuduler.dto.request.FriendshipRequestDto;
+import com.skku.skkuduler.domain.friendship.Friendship.FriendshipStatus;
+import com.skku.skkuduler.dto.response.FriendshipResponseDto;
 import com.skku.skkuduler.infrastructure.FriendshipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.skku.skkuduler.common.exception.Error;
+import com.skku.skkuduler.common.exception.ErrorException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -20,110 +23,136 @@ public class FriendshipService {
     private final FriendshipRepository friendshipRepository;
 
     @Transactional
-    public Friendship sendFriendRequest(User fromUser, User toUser) {
-        // 기존에 ACCEPTED 상태의 친구 관계가 있는지 확인
+    public FriendshipResponseDto sendFriendRequest(User fromUser, User toUser) {
         boolean isAlreadyFriends = friendshipRepository.existsFriendshipByUserIds(fromUser.getUserId(), toUser.getUserId());
         if (isAlreadyFriends) {
-            throw new IllegalArgumentException("You are already friends.");
+            throw new ErrorException(Error.ALREADY_FRIEND);
         }
 
-        // 새로운 친구 요청 생성
         Friendship friendship = new Friendship();
         friendship.setFromUserId(fromUser.getUserId());
         friendship.setToUserId(toUser.getUserId());
         friendship.setStatus(FriendshipStatus.PENDING);
 
-        // 저장
-        return friendshipRepository.save(friendship);
+        Friendship savedFriendship = friendshipRepository.save(friendship);
+
+        return FriendshipResponseDto.builder()
+                .friendshipId(savedFriendship.getFriendshipId())
+                .fromUserId(savedFriendship.getFromUserId())
+                .toUserId(savedFriendship.getToUserId())
+                .status(savedFriendship.getStatus())
+                .build();
     }
 
     @Transactional(readOnly = true)
-    public List<Friendship> getFriendRequestsByStatus(Long userId, FriendshipStatus status) {
-        return friendshipRepository.findByUserIdAndStatus(userId, status);
-    }
+    public List<FriendshipResponseDto> getFriendRequestsByStatus(Long userId, FriendshipStatus status) {
+        List<Friendship> friendships = friendshipRepository.findByUserIdAndStatus(userId, status);
 
-    @Transactional(readOnly = true)
-    public List<Friendship> getSentFriendRequestsByStatus(Long userId, FriendshipStatus status) {
-        return friendshipRepository.findBySentUserIdAndStatus(userId, status);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Friendship> getReceivedFriendRequestsByStatus(Long userId, FriendshipStatus status) {
-        return friendshipRepository.findByReceivedUserIdAndStatus(userId, status);
+        return friendships.stream()
+                .map(friendship -> FriendshipResponseDto.builder()
+                        .friendshipId(friendship.getFriendshipId())
+                        .fromUserId(friendship.getFromUserId())
+                        .toUserId(friendship.getToUserId())
+                        .status(friendship.getStatus())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public Friendship acceptFriendRequest(Long friendshipId) {
+    public FriendshipResponseDto acceptFriendRequest(Long friendshipId) {
         Friendship friendship = friendshipRepository.findById(friendshipId)
-                .orElseThrow(() -> new IllegalArgumentException("Friend request not found"));
+                .orElseThrow(() -> new ErrorException(Error.NOT_FOUND_FRIENDSHIP));
 
         if (friendship.getStatus() != FriendshipStatus.PENDING) {
-            throw new IllegalStateException("Friend request is not pending");
+            throw new ErrorException(Error.NOT_PENDING_FRIENDSHIP);
         }
 
         friendship.setStatus(FriendshipStatus.ACCEPTED);
-        return friendshipRepository.save(friendship);
+        Friendship updatedFriendship = friendshipRepository.save(friendship);
+
+        return FriendshipResponseDto.builder()
+                .friendshipId(updatedFriendship.getFriendshipId())
+                .fromUserId(updatedFriendship.getFromUserId())
+                .toUserId(updatedFriendship.getToUserId())
+                .status(updatedFriendship.getStatus())
+                .build();
     }
 
     @Transactional
-    public Friendship rejectFriendRequest(Long friendshipId) {
+    public FriendshipResponseDto rejectFriendRequest(Long friendshipId) {
         Friendship friendship = friendshipRepository.findById(friendshipId)
-                .orElseThrow(() -> new IllegalArgumentException("Friend request not found"));
+                .orElseThrow(() -> new ErrorException(Error.NOT_FOUND_FRIENDSHIP));
 
         if (friendship.getStatus() != FriendshipStatus.PENDING) {
-            throw new IllegalStateException("Friend request is not pending");
+            throw new ErrorException(Error.NOT_PENDING_FRIENDSHIP);
         }
 
         friendship.setStatus(FriendshipStatus.REJECTED);
-        return friendshipRepository.save(friendship);
+        Friendship updatedFriendship = friendshipRepository.save(friendship);
+
+        return FriendshipResponseDto.builder()
+                .friendshipId(updatedFriendship.getFriendshipId())
+                .fromUserId(updatedFriendship.getFromUserId())
+                .toUserId(updatedFriendship.getToUserId())
+                .status(updatedFriendship.getStatus())
+                .build();
     }
 
-    public Friendship findFriendshipById(Long friendshipId) {
-        return friendshipRepository.findById(friendshipId)
-                .orElseThrow(() -> new IllegalArgumentException("Friendship request not found"));
+    public FriendshipResponseDto findFriendshipById(Long friendshipId) {
+        Friendship friendship = friendshipRepository.findById(friendshipId)
+                .orElseThrow(() -> new ErrorException(Error.NOT_PENDING_FRIENDSHIP));
+
+        return FriendshipResponseDto.builder()
+                .friendshipId(friendship.getFriendshipId())
+                .fromUserId(friendship.getFromUserId())
+                .toUserId(friendship.getToUserId())
+                .status(friendship.getStatus())
+                .build();
     }
 
-
-    // userId와 관련된 모든 친구요청 조회 (맨 아래와 중복)
-    @Transactional(readOnly = true)
-    public List<Friendship> getAllFriendRequests(Long userId) {
-        return friendshipRepository.findAllByUserId(userId);
-    }
 
     //userId가 보낸 모든 친구요청 조회
     @Transactional(readOnly = true)
-    public List<Friendship> getFriendRequestsSentByUser(Long fromUserId) {
-        return friendshipRepository.findByFromUserId(fromUserId);
+    public List<FriendshipResponseDto> getFriendRequestsSentByUser(Long fromUserId) {
+        List<Friendship> friendships = friendshipRepository.findByFromUserId(fromUserId);
+
+        return friendships.stream()
+                .map(friendship -> FriendshipResponseDto.builder()
+                        .friendshipId(friendship.getFriendshipId())
+                        .fromUserId(friendship.getFromUserId())
+                        .toUserId(friendship.getToUserId())
+                        .status(friendship.getStatus())
+                        .build())
+                .collect(Collectors.toList());
     }
+
 
     //userId가 받은 모든 친구요청 조회
     @Transactional(readOnly = true)
-    public List<Friendship> getFriendRequestsReceivedByUser(Long toUserId) {
-        return friendshipRepository.findByToUserId(toUserId);
-    }
+    public List<FriendshipResponseDto> getFriendRequestsReceivedByUser(Long toUserId) {
+        List<Friendship> friendships = friendshipRepository.findByToUserId(toUserId);
 
-    // userId와 관련된 모든 친구요청 조회
-    @Transactional(readOnly = true)
-    public List<Friendship> getFriendRequestsAllByUser(Long userId) {
-        return friendshipRepository.findAllByUserId(userId);
-    }
-
-    @Transactional(readOnly=true)
-    public List<Friendship> getAllFriendsByUser(Long userId) {
-        return friendshipRepository.findFriendsByUserId(userId);
+        return friendships.stream()
+                .map(friendship -> FriendshipResponseDto.builder()
+                        .friendshipId(friendship.getFriendshipId())
+                        .fromUserId(friendship.getFromUserId())
+                        .toUserId(friendship.getToUserId())
+                        .status(friendship.getStatus())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public void cancelPendingFriendRequest(Long friendshipId, Long fromUserId) {
         Friendship friendship = friendshipRepository.findById(friendshipId)
-                .orElseThrow(() -> new IllegalArgumentException("Friend request not found"));
+                .orElseThrow(() -> new ErrorException(Error.NOT_FOUND_FRIENDSHIP));
 
         // 친구 요청이 PENDING 상태인지, fromUserId가 일치하는지 확인
         if (!friendship.getStatus().equals(FriendshipStatus.PENDING)) {
-            throw new IllegalStateException("Friend request is not in PENDING status.");
+            throw new ErrorException(Error.NOT_PENDING_FRIENDSHIP);
         }
         if (!friendship.getFromUserId().equals(fromUserId)) {
-            throw new IllegalStateException("You are not authorized to cancel this friend request.");
+            throw new ErrorException(Error.PERMISSION_DENIED);
         }
 
         friendshipRepository.delete(friendship);
