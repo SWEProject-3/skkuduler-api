@@ -31,6 +31,7 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
         f.friendshipId,
         CAST(CASE WHEN f.fromUserId = :userId THEN f.toUserId ELSE f.fromUserId END AS long),
         CASE WHEN f.fromUserId = :userId THEN u2.name ELSE u1.name END,
+        CASE WHEN f.fromUserId = :userId THEN u2.email ELSE u1.email END,
         f.status
     )
     FROM friendship f
@@ -45,6 +46,7 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
         f.friendshipId,
         u.userId,
         u.name,
+        u.email,
         f.status
     )
     FROM friendship f
@@ -58,6 +60,7 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
         f.friendshipId,
         u.userId,
         u.name,
+        u.email,
         f.status
     )
     FROM friendship f

@@ -43,9 +43,8 @@ public class FriendshipEndpoint {
     public ApiResponse<Void> sendFriendRequest(@RequestBody FriendshipRequestDto request,
                                                @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
         Long fromUserId = jwtUtil.extractUserId(token);
-        Long toUserId = request.getToUserId();
-        if (fromUserId.equals(toUserId)) throw new ErrorException(Error.INVALID_FRIEND_REQUEST);
-        friendshipService.sendFriendRequest(fromUserId, toUserId);
+        String email = request.getEmail();
+        friendshipService.sendFriendRequest(fromUserId, email);
         return new ApiResponse<>("친구 요청이 성공적으로 보내졌습니다.");
     }
 

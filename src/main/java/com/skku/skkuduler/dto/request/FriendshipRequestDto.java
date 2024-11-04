@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FriendshipRequestDto {
-    private Long toUserId;
+    private String email;
 }
