@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -44,7 +45,9 @@ public class FriendshipService {
 
     @Transactional(readOnly = true)
     public List<FriendInfoDto> getFriends(Long userId) {
-        return friendshipRepository.getFriendInfoDtosByUserIdAndAccepted(userId);
+        List<FriendInfoDto> response =friendshipRepository.getFriendInfoDtosByUserIdAndAccepted(userId);
+        response.sort(Comparator.comparing(FriendInfoDto::getFriendName));
+        return response;
     }
 
     @Transactional
