@@ -3,6 +3,8 @@ package com.skku.skkuduler.presentation;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
+
 @Getter
 public class ApiResponse<T> {
     private final Integer status;
