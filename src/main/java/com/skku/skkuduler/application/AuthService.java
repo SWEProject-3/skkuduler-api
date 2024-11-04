@@ -47,7 +47,7 @@ public class AuthService {
         Calender calender = calenderRepository.findById(calenderId).orElseThrow(()-> new ErrorException(Error.CALENDER_NOT_FOUND));
         if(!calender.getIsGlobal()){
             if(!calender.getUserId().equals(userId)){
-                if(!friendshipRepository.existsFriendshipByUserIds(calender.getUserId(),userId)){
+                if(!friendshipRepository.existsFriendshipByUserIdsAndAccept(calender.getUserId(),userId)){
                     throw new ErrorException(Error.NOT_FRIEND);
                 }
             }
