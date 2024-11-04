@@ -14,5 +14,6 @@ public class FriendInfoDto {
     private Long friendshipId;
     private Long friendUserId;
     private String friendName;
+    private String friendEmail;
     private FriendshipStatus status;
 }

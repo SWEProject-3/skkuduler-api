@@ -4,6 +4,7 @@ import com.skku.skkuduler.common.exception.Error;
 import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.domain.friendship.Friendship;
 import com.skku.skkuduler.domain.friendship.Friendship.FriendshipStatus;
+import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.dto.response.FriendInfoDto;
 import com.skku.skkuduler.infrastructure.FriendshipRepository;
 import com.skku.skkuduler.infrastructure.UserRepository;
@@ -24,7 +25,9 @@ public class FriendshipService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void sendFriendRequest(Long fromUserId, Long toUserId) {
+    public void sendFriendRequest(Long fromUserId, String email) {
+        Long toUserId = userRepository.findByEmail(email).orElseThrow(()-> new ErrorException(Error.USER_NOT_FOUND)).getUserId();
+        if (fromUserId.equals(toUserId)) throw new ErrorException(Error.INVALID_FRIEND_REQUEST);
         Friendship friendship = friendshipRepository.findFriendshipByUserIds(fromUserId, toUserId).orElse(null);
         if (friendship == null) {
             boolean isUserExists = userRepository.existsByUserId(toUserId) && userRepository.existsByUserId(fromUserId);
