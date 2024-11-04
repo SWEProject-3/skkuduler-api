@@ -17,7 +17,7 @@ public class JwtUtil {
 
 
     private final SecretKey secretKey;
-    private final Long expiredMs = 60 * 60 * 60 * 60 * 60 * 10L;
+    private final Long expiredMs = 60 * 60 * 60 * 60 * 60 * 100L;
 
     public JwtUtil(@Value("${spring.jwt.secret}")String secret) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
@@ -34,15 +34,14 @@ public class JwtUtil {
         }catch (Exception e){
             throw new ErrorException(Error.WRONG_TOKEN);
         }
-
     }
 
     public Long extractUserId(String bearer) {
-        String token = bearer.split(" ")[1];
+        System.out.println(bearer);
+        String token = bearer.split(" ")[bearer.split(" ").length - 1];
+        System.out.println(token);
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
     }
-
-
 
     public String generateToken(Long userId) {
         return Jwts.builder()
