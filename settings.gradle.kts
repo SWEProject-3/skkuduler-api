@@ -1,1 +1,1 @@
-rootProject.name = 'skkuduler'
+rootProject.name = "skkuduler"

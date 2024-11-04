@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendshipResponseDto {
+public class FriendInfoDto {
     private Long friendshipId;
-    private Long fromUserId;
-    private Long toUserId;
+    private Long friendUserId;
+    private String friendName;
     private FriendshipStatus status;
 }

@@ -1,13 +1,11 @@
 package com.skku.skkuduler.common.config;
 
-import com.skku.skkuduler.application.AuthService;
 import com.skku.skkuduler.common.security.JwtAuthenticationFilter;
 import com.skku.skkuduler.common.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,16 +25,14 @@ import java.util.List;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-    private final AuthService authService;
     @Value("${spring.server.base.url}")
     private String baseUrl;
     private final JwtUtil jwtUtil;
     private final HandlerExceptionResolver resolver;
 
-    public SecurityConfig(JwtUtil jwtUtil, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver, @Lazy AuthService authService) {
+    public SecurityConfig(JwtUtil jwtUtil, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         this.jwtUtil = jwtUtil;
         this.resolver = resolver;
-        this.authService = authService;
     }
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -83,7 +79,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, authService, resolver), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, resolver), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .sessionManagement((session) -> session
@@ -98,8 +94,8 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> {
             web.ignoring()
-                    .requestMatchers(HttpMethod.POST,  "/api/auth/**", "/api/test/**", "/api/friendship/**")
-                    .requestMatchers(HttpMethod.GET, "/error/**", "/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/api/friendship/**");
+                    .requestMatchers(HttpMethod.POST,  "/api/auth/**", "/api/test/**")
+                    .requestMatchers(HttpMethod.GET, "/error/**", "/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html");
         };
     }
 }

@@ -1,12 +1,13 @@
 package com.skku.skkuduler.infrastructure;
 
 import com.skku.skkuduler.domain.friendship.Friendship;
-import com.skku.skkuduler.domain.friendship.FriendshipStatus;
+import com.skku.skkuduler.dto.response.FriendInfoDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
@@ -16,43 +17,53 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     FROM friendship f
     WHERE f.status = 'ACCEPTED' AND ((f.fromUserId = :aUserId AND f.toUserId = :bUserId) OR (f.fromUserId = :bUserId AND f.toUserId = :aUserId))
     """)
-    boolean existsFriendshipByUserIds(@Param("aUserId") Long aUserId , @Param("bUserId") Long bUserId);
-
-    @Query("SELECT f FROM friendship f WHERE (f.fromUserId = :userId OR f.toUserId = :userId) AND f.status = :status")
-    List<Friendship> findByUserIdAndStatus(@Param("userId") Long userId, @Param("status") FriendshipStatus status);
-
-    @Query("SELECT f FROM friendship f WHERE (f.fromUserId = :userId) AND f.status = :status")
-    List<Friendship> findBySentUserIdAndStatus(@Param("userId") Long userId, @Param("status") FriendshipStatus status);
-
-    @Query("SELECT f FROM friendship f WHERE (f.toUserId = :userId) AND f.status = :status")
-    List<Friendship> findByReceivedUserIdAndStatus(@Param("userId") Long userId, @Param("status") FriendshipStatus status);
-
-
-    // 내가 보내고 받은 친구요청 조회하기
-    @Query("""
-    SELECT f FROM friendship f 
-    WHERE f.fromUserId = :userId OR f.toUserId = :userId
-    """)
-    List<Friendship> findAllByUserId(@Param("userId") Long userId);
-
-    // 내가 보낸 친구요청 조회하기
-    @Query("""
-    SELECT f FROM friendship f 
-    WHERE f.fromUserId = :fromUserId AND f.status = 'PENDING'
-    """)
-    List<Friendship> findByFromUserId(@Param("fromUserId") Long fromUserId);
-
-    // 내가 받은 친구요청 조회하기
-    @Query("""
-    SELECT f FROM friendship f 
-    WHERE f.toUserId = :toUserId AND f.status = 'PENDING'
-    """)
-    List<Friendship> findByToUserId(@Param("toUserId") Long toUserId);
+    boolean existsFriendshipByUserIdsAndAccept(@Param("aUserId") Long aUserId , @Param("bUserId") Long bUserId);
 
     @Query("""
-    SELECT f FROM friendship f 
-    WHERE (f.fromUserId = :userId OR f.toUserId = :userId) 
-    AND f.status = 'ACCEPTED'
+    SELECT f
+    FROM friendship f
+    WHERE ((f.fromUserId = :aUserId AND f.toUserId = :bUserId) OR (f.fromUserId = :bUserId AND f.toUserId = :aUserId))
     """)
-    List<Friendship> findFriendsByUserId(@Param("userId") Long userId);
+    Optional<Friendship> findFriendshipByUserIds(@Param("aUserId") Long aUserId , @Param("bUserId") Long bUserId);
+
+    @Query("""
+    SELECT new com.skku.skkuduler.dto.response.FriendInfoDto(
+        f.friendshipId,
+        CAST(CASE WHEN f.fromUserId = :userId THEN f.toUserId ELSE f.fromUserId END AS long),
+        CASE WHEN f.fromUserId = :userId THEN u2.name ELSE u1.name END,
+        f.status
+    )
+    FROM friendship f
+    INNER JOIN user u1 ON f.fromUserId = u1.userId
+    INNER JOIN user u2 ON f.toUserId = u2.userId
+    WHERE f.status = 'ACCEPTED' AND (f.fromUserId = :userId OR f.toUserId = :userId)
+    """)
+    List<FriendInfoDto> getFriendInfoDtosByUserIdAndAccepted(@Param("userId") Long userId);
+
+    @Query("""
+    SELECT new com.skku.skkuduler.dto.response.FriendInfoDto(
+        f.friendshipId,
+        u.userId,
+        u.name,
+        f.status
+    )
+    FROM friendship f
+    INNER JOIN user u ON u.userId = f.toUserId AND u.deletedAt IS NULL
+    WHERE f.status = 'PENDING' AND f.fromUserId = :fromUserId
+    """)
+    List<FriendInfoDto> getFriendInfoDtosByFromUserIdAndPending(@Param("fromUserId") Long fromUserId);
+
+    @Query("""
+    SELECT new com.skku.skkuduler.dto.response.FriendInfoDto(
+        f.friendshipId,
+        u.userId,
+        u.name,
+        f.status
+    )
+    FROM friendship f
+    INNER JOIN user u ON u.userId = f.fromUserId AND u.deletedAt IS NULL
+    WHERE f.status = 'PENDING' AND f.toUserId = :toUserId
+    """)
+    List<FriendInfoDto> getFriendInfoDtosByToUserIdAndPending(@Param("toUserId") Long toUserId);
+
 }

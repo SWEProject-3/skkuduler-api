@@ -4,7 +4,6 @@ import com.skku.skkuduler.common.exception.Error;
 import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.domain.calender.Calender;
 import com.skku.skkuduler.domain.calender.Event;
-import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.dto.request.UserEventCreationDto;
 import com.skku.skkuduler.dto.response.CalenderInfoDto;
 import com.skku.skkuduler.dto.response.EventSummaryDto;
@@ -28,7 +27,7 @@ public class CalenderService {
 
     @Transactional(readOnly = true)
     public List<CalenderInfoDto> loadUserCalenders(Long userId, Long viewerId) {
-        if (!userId.equals(viewerId) && !friendshipRepository.existsFriendshipByUserIds(userId, viewerId)) {
+        if (!userId.equals(viewerId) && !friendshipRepository.existsFriendshipByUserIdsAndAccept(userId, viewerId)) {
             throw new ErrorException(Error.NOT_FRIEND);
         }
         return calenderRepository.findAllUserCalendersToCalenderInfoDto(userId);

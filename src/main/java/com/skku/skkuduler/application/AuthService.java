@@ -24,8 +24,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    private final Set<String> tokenBlacklist = new HashSet<>();
-
     @Transactional
     public void registerUser(UserRegistrationRequestDto userRequest) {
         User user = new User();
@@ -61,17 +59,6 @@ public class AuthService {
         user.changePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
-
-    @Transactional
-    public void logoutUser(String token) {
-        String cleanToken = token.replace("Bearer ", "");
-        tokenBlacklist.remove(cleanToken);
-    }
-
-    public boolean isTokenBlacklisted(String token) {
-        return tokenBlacklist.contains(token);
-    }
-
 
     //TODO : calender가 isGlobal일때 -> 구독 했는지? isGlobal아닐때 -> userId가 calender.getUserId과 같은지 or 주인과 다르다면 친구가 맞는지?
     @Transactional(readOnly = true)

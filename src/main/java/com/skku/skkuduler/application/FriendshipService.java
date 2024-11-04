@@ -1,18 +1,17 @@
 package com.skku.skkuduler.application;
 
-import com.skku.skkuduler.domain.user.User;
+import com.skku.skkuduler.common.exception.Error;
+import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.domain.friendship.Friendship;
 import com.skku.skkuduler.domain.friendship.Friendship.FriendshipStatus;
-import com.skku.skkuduler.dto.response.FriendshipResponseDto;
+import com.skku.skkuduler.dto.response.FriendInfoDto;
 import com.skku.skkuduler.infrastructure.FriendshipRepository;
+import com.skku.skkuduler.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.skku.skkuduler.common.exception.Error;
-import com.skku.skkuduler.common.exception.ErrorException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -21,140 +20,90 @@ public class FriendshipService {
 
 
     private final FriendshipRepository friendshipRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public FriendshipResponseDto sendFriendRequest(User fromUser, User toUser) {
-        boolean isAlreadyFriends = friendshipRepository.existsFriendshipByUserIds(fromUser.getUserId(), toUser.getUserId());
-        if (isAlreadyFriends) {
-            throw new ErrorException(Error.ALREADY_FRIEND);
+    public void sendFriendRequest(Long fromUserId, Long toUserId) {
+        Friendship friendship = friendshipRepository.findFriendshipByUserIds(fromUserId, toUserId).orElse(null);
+        if (friendship == null) {
+            boolean isUserExists = userRepository.existsByUserId(toUserId) && userRepository.existsByUserId(fromUserId);
+            if (!isUserExists) throw new ErrorException(Error.USER_NOT_FOUND);
+            friendship = new Friendship();
+            friendship.setFromUserId(fromUserId);
+            friendship.setToUserId(toUserId);
+            friendship.setStatus(FriendshipStatus.PENDING);
+        } else { // 이미 상대방이 나에게 친구요청을 보냈을때 ACCEPTED 로 상태 변경
+            if (friendship.getStatus() == FriendshipStatus.ACCEPTED) throw new ErrorException(Error.ALREADY_FRIEND);
+            if (friendship.getFromUserId().equals(fromUserId) && friendship.getToUserId().equals(toUserId))
+                throw new ErrorException(Error.FRIEND_REQUEST_ALREADY_SENT);
+            friendship.setStatus(FriendshipStatus.ACCEPTED);
         }
+        friendshipRepository.save(friendship);
 
-        Friendship friendship = new Friendship();
-        friendship.setFromUserId(fromUser.getUserId());
-        friendship.setToUserId(toUser.getUserId());
-        friendship.setStatus(FriendshipStatus.PENDING);
-
-        Friendship savedFriendship = friendshipRepository.save(friendship);
-
-        return FriendshipResponseDto.builder()
-                .friendshipId(savedFriendship.getFriendshipId())
-                .fromUserId(savedFriendship.getFromUserId())
-                .toUserId(savedFriendship.getToUserId())
-                .status(savedFriendship.getStatus())
-                .build();
     }
 
     @Transactional(readOnly = true)
-    public List<FriendshipResponseDto> getFriendRequestsByStatus(Long userId, FriendshipStatus status) {
-        List<Friendship> friendships = friendshipRepository.findByUserIdAndStatus(userId, status);
-
-        return friendships.stream()
-                .map(friendship -> FriendshipResponseDto.builder()
-                        .friendshipId(friendship.getFriendshipId())
-                        .fromUserId(friendship.getFromUserId())
-                        .toUserId(friendship.getToUserId())
-                        .status(friendship.getStatus())
-                        .build())
-                .collect(Collectors.toList());
+    public List<FriendInfoDto> getFriends(Long userId) {
+        return friendshipRepository.getFriendInfoDtosByUserIdAndAccepted(userId);
     }
 
     @Transactional
-    public FriendshipResponseDto acceptFriendRequest(Long friendshipId) {
+    public void acceptFriendRequest(Long friendshipId, Long toUserId) {
         Friendship friendship = friendshipRepository.findById(friendshipId)
-                .orElseThrow(() -> new ErrorException(Error.NOT_FOUND_FRIENDSHIP));
+                .orElseThrow(() -> new ErrorException(Error.FRIEND_REQUEST_NOT_FOUND));
 
-        if (friendship.getStatus() != FriendshipStatus.PENDING) {
-            throw new ErrorException(Error.NOT_PENDING_FRIENDSHIP);
+        if (friendship.getStatus() != FriendshipStatus.PENDING || !friendship.getToUserId().equals(toUserId)) {
+            throw new ErrorException(Error.FRIEND_REQUEST_NOT_FOUND);
         }
-
         friendship.setStatus(FriendshipStatus.ACCEPTED);
-        Friendship updatedFriendship = friendshipRepository.save(friendship);
-
-        return FriendshipResponseDto.builder()
-                .friendshipId(updatedFriendship.getFriendshipId())
-                .fromUserId(updatedFriendship.getFromUserId())
-                .toUserId(updatedFriendship.getToUserId())
-                .status(updatedFriendship.getStatus())
-                .build();
+        friendshipRepository.save(friendship);
     }
 
     @Transactional
-    public FriendshipResponseDto rejectFriendRequest(Long friendshipId) {
+    public void rejectFriendRequest(Long friendshipId, Long toUserId) {
         Friendship friendship = friendshipRepository.findById(friendshipId)
-                .orElseThrow(() -> new ErrorException(Error.NOT_FOUND_FRIENDSHIP));
+                .orElseThrow(() -> new ErrorException(Error.FRIEND_REQUEST_NOT_FOUND));
 
-        if (friendship.getStatus() != FriendshipStatus.PENDING) {
-            throw new ErrorException(Error.NOT_PENDING_FRIENDSHIP);
+        if (friendship.getStatus() != FriendshipStatus.PENDING || !friendship.getToUserId().equals(toUserId)) {
+            throw new ErrorException(Error.FRIEND_REQUEST_NOT_FOUND);
         }
-
-        friendship.setStatus(FriendshipStatus.REJECTED);
-        Friendship updatedFriendship = friendshipRepository.save(friendship);
-
-        return FriendshipResponseDto.builder()
-                .friendshipId(updatedFriendship.getFriendshipId())
-                .fromUserId(updatedFriendship.getFromUserId())
-                .toUserId(updatedFriendship.getToUserId())
-                .status(updatedFriendship.getStatus())
-                .build();
-    }
-
-    public FriendshipResponseDto findFriendshipById(Long friendshipId) {
-        Friendship friendship = friendshipRepository.findById(friendshipId)
-                .orElseThrow(() -> new ErrorException(Error.NOT_PENDING_FRIENDSHIP));
-
-        return FriendshipResponseDto.builder()
-                .friendshipId(friendship.getFriendshipId())
-                .fromUserId(friendship.getFromUserId())
-                .toUserId(friendship.getToUserId())
-                .status(friendship.getStatus())
-                .build();
-    }
-
-
-    //userId가 보낸 모든 친구요청 조회
-    @Transactional(readOnly = true)
-    public List<FriendshipResponseDto> getFriendRequestsSentByUser(Long fromUserId) {
-        List<Friendship> friendships = friendshipRepository.findByFromUserId(fromUserId);
-
-        return friendships.stream()
-                .map(friendship -> FriendshipResponseDto.builder()
-                        .friendshipId(friendship.getFriendshipId())
-                        .fromUserId(friendship.getFromUserId())
-                        .toUserId(friendship.getToUserId())
-                        .status(friendship.getStatus())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-
-    //userId가 받은 모든 친구요청 조회
-    @Transactional(readOnly = true)
-    public List<FriendshipResponseDto> getFriendRequestsReceivedByUser(Long toUserId) {
-        List<Friendship> friendships = friendshipRepository.findByToUserId(toUserId);
-
-        return friendships.stream()
-                .map(friendship -> FriendshipResponseDto.builder()
-                        .friendshipId(friendship.getFriendshipId())
-                        .fromUserId(friendship.getFromUserId())
-                        .toUserId(friendship.getToUserId())
-                        .status(friendship.getStatus())
-                        .build())
-                .collect(Collectors.toList());
+        friendshipRepository.delete(friendship);
     }
 
     @Transactional
     public void cancelPendingFriendRequest(Long friendshipId, Long fromUserId) {
         Friendship friendship = friendshipRepository.findById(friendshipId)
-                .orElseThrow(() -> new ErrorException(Error.NOT_FOUND_FRIENDSHIP));
+                .orElseThrow(() -> new ErrorException(Error.FRIEND_REQUEST_NOT_FOUND));
 
-        // 친구 요청이 PENDING 상태인지, fromUserId가 일치하는지 확인
-        if (!friendship.getStatus().equals(FriendshipStatus.PENDING)) {
-            throw new ErrorException(Error.NOT_PENDING_FRIENDSHIP);
-        }
-        if (!friendship.getFromUserId().equals(fromUserId)) {
-            throw new ErrorException(Error.PERMISSION_DENIED);
+        if (!friendship.getStatus().equals(FriendshipStatus.PENDING) || !friendship.getFromUserId().equals(fromUserId)) {
+            throw new ErrorException(Error.FRIEND_REQUEST_NOT_FOUND);
         }
 
+        friendshipRepository.delete(friendship);
+    }
+
+    //userId가 보낸 모든 친구요청 조회
+    @Transactional(readOnly = true)
+    public List<FriendInfoDto> getFriendRequestsSentByUser(Long fromUserId) {
+        return friendshipRepository.getFriendInfoDtosByFromUserIdAndPending(fromUserId);
+    }
+
+    //userId가 받은 모든 친구요청 조회
+    @Transactional(readOnly = true)
+    public List<FriendInfoDto> getFriendRequestsReceivedByUser(Long toUserId) {
+        return friendshipRepository.getFriendInfoDtosByToUserIdAndPending(toUserId);
+    }
+
+    //userId의 친구관계 삭제
+    @Transactional
+    public void deleteFriend(Long friendshipId, Long userId) {
+        Friendship friendship = friendshipRepository.findById(friendshipId)
+                .orElseThrow(() -> new ErrorException(Error.FRIENDSHIP_NOT_FOUND));
+        if (friendship.getStatus() != FriendshipStatus.ACCEPTED
+                && !friendship.getToUserId().equals(userId)
+                && !friendship.getFromUserId().equals(userId)) {
+            throw new ErrorException(Error.NOT_FRIEND);
+        }
         friendshipRepository.delete(friendship);
     }
 }
