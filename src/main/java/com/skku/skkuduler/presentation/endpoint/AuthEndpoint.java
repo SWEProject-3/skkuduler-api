@@ -7,6 +7,7 @@ import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.dto.request.PasswordChangeDto;
 import com.skku.skkuduler.dto.request.UserLoginRequestDto;
 import com.skku.skkuduler.dto.request.UserRegistrationRequestDto;
+import com.skku.skkuduler.dto.response.LoginSuccessDto;
 import com.skku.skkuduler.dto.response.UserInfoDto;
 import com.skku.skkuduler.presentation.ApiResponse;
 import jakarta.validation.Valid;
@@ -28,13 +29,8 @@ public class AuthEndpoint {
     }
 
     @PostMapping("/login")
-    public ApiResponse<String> loginUser(@RequestBody UserLoginRequestDto loginRequest) {
-        String token = accountService.loginUser(loginRequest);
-        if (token != null) {
-            return new ApiResponse<>(200, "User login successfully", token);
-        } else {
-            throw new ErrorException(Error.LOGIN_FAILED);
-        }
+    public ApiResponse<LoginSuccessDto> loginUser(@RequestBody UserLoginRequestDto loginRequest) {
+        return new ApiResponse<>(accountService.loginUser(loginRequest));
     }
 
     @GetMapping("/check-token")
