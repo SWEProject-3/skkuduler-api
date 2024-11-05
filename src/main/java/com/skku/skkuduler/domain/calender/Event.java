@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,16 +23,17 @@ public class Event{
     private String title;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<CalenderEvent> calenderEvents;
+    @Builder.Default
+    private List<CalenderEvent> calenderEvents = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
     private String colorCode;
 
-    private LocalDate startDate;
+    private LocalDateTime startDateTime;
 
-    private LocalDate endDate;
+    private LocalDateTime endDateTime;
 
     private Boolean isUserEvent;
 
@@ -63,15 +65,17 @@ public class Event{
         if(colorCode != null) this.colorCode = colorCode;
     }
 
-    public void changeDate(LocalDate startDate, LocalDate endDate){
-        if(startDate != null && endDate != null) {
-            this.startDate = startDate;
-            this.endDate = endDate;
+    public void changeDate(LocalDateTime startDateTime, LocalDateTime endDateTime){
+        if(startDateTime != null && endDateTime != null) {
+            this.startDateTime = startDateTime;
+            this.endDateTime = endDateTime;
         }
     }
 
     public void changeImages(List<Image> images){
         this.images.clear();
-        this.images.addAll(images);
+        if(images != null) {
+            this.images.addAll(images);
+        }
     }
 }

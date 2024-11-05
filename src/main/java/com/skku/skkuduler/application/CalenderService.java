@@ -76,8 +76,8 @@ public class CalenderService {
                                 event.getEventId(),
                                 event.getTitle(),
                                 event.getColorCode(),
-                                event.getStartDate(),
-                                event.getEndDate().isAfter(endDate) ? endDate : event.getEndDate()
+                                event.getStartDateTime(),
+                                event.getEndDateTime()
                         )
         ).toList();
     }
@@ -89,21 +89,23 @@ public class CalenderService {
         event.changeTitle(eventCreationDto.getTitle());
         event.changeContent(eventCreationDto.getContent());
         event.changeColorCode(eventCreationDto.getColorCode());
-        event.changeDate(eventCreationDto.getStartDate(), eventCreationDto.getEndDate());
-        List<Image> images = eventCreationDto.getImages().stream()
-                .map(imageInfo -> {
-                    try {
-                        return Image.builder()
-                                .event(event)
-                                .src(fileService.storeFile(imageInfo.getImageFile()))
-                                .order(imageInfo.getOrder())
-                                .build();
-                    } catch (IOException e) {
-                        throw new ErrorException(Error.FILE_STORE_ERROR);
-                    }
-                })
-                .toList();
-        event.changeImages(images);
+        event.changeDate(eventCreationDto.getStartDateTime(), eventCreationDto.getEndDateTime());
+        if(eventCreationDto.getImages() != null) {
+            List<Image> images = eventCreationDto.getImages().stream()
+                    .map(imageInfo -> {
+                        try {
+                            return Image.builder()
+                                    .event(event)
+                                    .src(fileService.storeFile(imageInfo.getImageFile()))
+                                    .order(imageInfo.getOrder())
+                                    .build();
+                        } catch (IOException e) {
+                            throw new ErrorException(Error.FILE_STORE_ERROR);
+                        }
+                    })
+                    .toList();
+            event.changeImages(images);
+        }
         calender.addEvent(event);
     }
 
@@ -141,8 +143,8 @@ public class CalenderService {
         event.changeTitle(eventUpdateDto.getTitle());
         event.changeContent(eventUpdateDto.getContent());
         event.changeColorCode(eventUpdateDto.getColorCode());
-        event.changeDate(eventUpdateDto.getStartDate(), eventUpdateDto.getEndDate());
-        List<Image> images = eventUpdateDto.getImages().stream()
+        event.changeDate(eventUpdateDto.getStartDateTime(), eventUpdateDto.getEndDateTime());
+        List<Image> images = eventUpdateDto.getImages() == null ? null : eventUpdateDto.getImages().stream()
                 .map(imageInfo -> {
                     try {
                         return Image.builder()
@@ -164,7 +166,7 @@ public class CalenderService {
         Event calenderEvent = calender.getEvent(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
 
         EventInfo eventInfo = new EventInfo(calenderEvent.getEventId(), calenderEvent.getTitle(), calenderEvent.getContent()
-                , calenderEvent.getColorCode(), calenderEvent.getStartDate(), calenderEvent.getEndDate());
+                , calenderEvent.getColorCode(), calenderEvent.getStartDateTime(), calenderEvent.getEndDateTime());
 
         List<ImageInfo> images = calenderEvent.getImages().stream()
                 .map(image -> new ImageInfo( baseUrl + image.getSrc(), image.getOrder()))
