@@ -1,5 +1,6 @@
 package com.skku.skkuduler.domain.calender;
 
+import com.skku.skkuduler.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,8 +29,9 @@ public class Calender {
     @Column(nullable = false)
     private String name;
 
-    @Column(updatable = false)
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(updatable = false)
     private Long departmentId;
@@ -41,9 +43,9 @@ public class Calender {
     private List<CalenderEvent> calenderEvents = new ArrayList<>();
 
     //팩토리
-    public static Calender userCalender(Long userId) {
+    public static Calender userCalender(User user) {
         return Calender.builder()
-                .userId(userId)
+                .user(user)
                 .isGlobal(false)
                 .build();
     }
