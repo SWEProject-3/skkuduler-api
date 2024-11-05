@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -71,9 +73,12 @@ public class Calender {
     }
 
     public List<Event> getEventsBetween(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime startDateTime = startDate.atStartOfDay(); // 00:00:00
+        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX); // 23:59:59
+
         return calenderEvents.stream()
                 .map(CalenderEvent::getEvent)
-                .filter(event -> !event.getStartDate().isAfter(endDate) && !event.getEndDate().isBefore(startDate))
+                .filter(event -> !event.getStartDateTime().isAfter(endDateTime) && !event.getEndDateTime().isBefore(startDateTime))
                 .collect(Collectors.toList());
     }
 

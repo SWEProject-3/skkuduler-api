@@ -1,11 +1,13 @@
 package com.skku.skkuduler.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -29,8 +31,10 @@ public class CalenderEventDetailDto {
         private String title;
         private String content;
         private String colorCode;
-        private LocalDate startDate;
-        private LocalDate endDate;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+        private LocalDateTime startDateTime;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+        private LocalDateTime endDateTime;
     }
 
     @Data
