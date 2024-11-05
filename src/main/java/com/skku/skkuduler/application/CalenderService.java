@@ -8,7 +8,6 @@ import com.skku.skkuduler.domain.calender.Image;
 import com.skku.skkuduler.dto.request.EventCreationDto;
 import com.skku.skkuduler.dto.request.EventUpdateDto;
 import com.skku.skkuduler.dto.response.CalenderEventDetailDto;
-import com.skku.skkuduler.dto.response.CalenderInfoDto;
 import com.skku.skkuduler.dto.response.EventSummaryDto;
 import com.skku.skkuduler.infrastructure.CalenderRepository;
 import com.skku.skkuduler.infrastructure.DepartmentRepository;
@@ -37,39 +36,12 @@ public class CalenderService {
     @Value("${spring.cloud.gcp.storage.path}${spring.cloud.gcp.storage.bucket}/")
     private String baseUrl;
 
-    @Transactional(readOnly = true)
-    public List<CalenderInfoDto> loadUserCalenders(Long userId) {
-        return calenderRepository.findAllUserCalendersToCalenderInfoDto(userId);
-    }
 
     @Transactional(readOnly = true)
-    public List<CalenderInfoDto> loadDepartmentCalenders(Long departmentId) {
-        return calenderRepository.findAllDeptCalendersToCalenderInfoDto(departmentId);
-    }
-
-    @Transactional
-    public void createUserCalender(Long userId, String name) {
-        Calender calender = Calender.userCalender(userId);
-        calender.changeName(name);
-        calenderRepository.save(calender);
-    }
-
-    @Transactional
-    public void updateUserCalender(Long calenderId, String name) {
-        Calender calender = calenderRepository.findById(calenderId).orElseThrow(() -> new ErrorException(Error.CALENDER_NOT_FOUND));
-        calender.changeName(name);
-        calenderRepository.save(calender);
-    }
-
-    @Transactional
-    public void deleteUserCalender(Long calenderId) {
-        Calender calender = calenderRepository.findById(calenderId).orElseThrow(() -> new ErrorException(Error.CALENDER_NOT_FOUND));
-        calenderRepository.delete(calender);
-    }
-
-    @Transactional(readOnly = true)
-    public List<EventSummaryDto> getEventsBetween(Long calenderId, LocalDate startDate, LocalDate endDate) {
-        Calender calender = calenderRepository.findById(calenderId).orElseThrow(() -> new ErrorException(Error.CALENDER_NOT_FOUND));
+    public List<EventSummaryDto> getEventsBetween(Long userId, LocalDate startDate, LocalDate endDate) {
+        Calender calender = userRepository.findById(userId)
+                .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
+                .getCalender();
         return calender.getEventsBetween(startDate, endDate).stream().map(
                 event ->
                         new EventSummaryDto(
@@ -83,9 +55,11 @@ public class CalenderService {
     }
 
     @Transactional
-    public void createUserCalenderEvent(Long calenderId, EventCreationDto eventCreationDto) {
-        Calender calender = calenderRepository.findById(calenderId).orElseThrow(() -> new ErrorException(Error.CALENDER_NOT_FOUND));
-        Event event = Event.userEventOf(calender.getUserId());
+    public void createUserCalenderEvent(Long userId, EventCreationDto eventCreationDto) {
+        Calender calender = userRepository.findById(userId)
+                .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
+                .getCalender();
+        Event event = Event.userEventOf(userId);
         event.changeTitle(eventCreationDto.getTitle());
         event.changeContent(eventCreationDto.getContent());
         event.changeColorCode(eventCreationDto.getColorCode());
@@ -110,10 +84,11 @@ public class CalenderService {
     }
 
     @Transactional
-    public void addUserCalenderEvent(Long calenderId, Long fromCalenderId, Long eventId) {
-        Calender calender = calenderRepository.findById(calenderId).orElseThrow(() -> new ErrorException(Error.CALENDER_NOT_FOUND));
-        Calender fromCalender = calenderRepository.findById(fromCalenderId).orElseThrow(() -> new ErrorException(Error.CALENDER_NOT_FOUND));
-        Event event = fromCalender.getEvent(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
+    public void addUserCalenderEvent(Long userId, Long eventId) {
+        Calender calender = userRepository.findById(userId)
+                .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
+                .getCalender();
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
         try {
             calender.addEvent(event);
             calenderRepository.save(calender);
@@ -124,14 +99,16 @@ public class CalenderService {
 
     //유저가 일정 삭제 -> 본인 것은 영구삭제
     @Transactional
-    public void deleteUserCalenderEvent(Long calenderId, Long eventId) {
-        Calender calender = calenderRepository.findById(calenderId).orElseThrow(() -> new ErrorException(Error.CALENDER_NOT_FOUND));
+    public void deleteUserCalenderEvent(Long eventId, Long userId) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
+        Calender calender = userRepository.findById(userId)
+                .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
+                .getCalender();
         if(!calender.removeEvent(event)){
             throw new ErrorException(Error.INVALID_REMOVAL_CALENDER_EVENT);
         };
         calenderRepository.save(calender);
-        if (event.getIsUserEvent() && event.getUserId().equals(calender.getUserId())) {
+        if (event.getIsUserEvent() && event.getUserId().equals(userId)) {
             eventRepository.delete(event);
         }
     }
@@ -161,9 +138,8 @@ public class CalenderService {
     }
 
     @Transactional(readOnly = true)
-    public CalenderEventDetailDto getCalenderEvent(Long calenderId, Long eventId) {
-        Calender calender = calenderRepository.findById(calenderId).orElseThrow(() -> new ErrorException(Error.CALENDER_NOT_FOUND));
-        Event calenderEvent = calender.getEvent(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
+    public CalenderEventDetailDto getCalenderEvent(Long eventId) {
+        Event calenderEvent = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
 
         EventInfo eventInfo = new EventInfo(calenderEvent.getEventId(), calenderEvent.getTitle(), calenderEvent.getContent()
                 , calenderEvent.getColorCode(), calenderEvent.getStartDateTime(), calenderEvent.getEndDateTime());
@@ -184,7 +160,7 @@ public class CalenderService {
             calenderEventDetailDto.setOwnerUserId(calenderEvent.getUserId());
         } else { // 학과 이벤트인 경우
             calenderEventDetailDto.setIsDepartmentEvent(true);
-            String departmentName = departmentRepository.findById(calender.getDepartmentId()).orElseThrow(()-> new ErrorException(Error.DEPARTMENT_NOT_FOUND)).getName();
+            String departmentName = departmentRepository.findById(calenderEvent.getDepartmentId()).orElseThrow(()-> new ErrorException(Error.DEPARTMENT_NOT_FOUND)).getName();
             calenderEventDetailDto.setDepartmentName(departmentName);
             calenderEventDetailDto.setDepartmentId(calenderEvent.getDepartmentId());
         }

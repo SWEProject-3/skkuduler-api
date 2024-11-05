@@ -31,20 +31,19 @@ public class UserEndpoint {
         Pageable pageable = PageRequest.of(page,10);
         return new ApiResponse<>(departmentService.getSubscribedDepartments(userId,pageable));
     }
-    @PostMapping("/{userId}/subscriptions/{departmentId}")
-    public ApiResponse<Void> subscribeDepartment(@PathVariable("userId") Long userId,
+    @PostMapping("/subscriptions/{departmentId}")
+    public ApiResponse<Void> subscribeDepartment(
                                                  @PathVariable("departmentId") Long departmentId,
                                                  @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        if (!userId.equals(jwtUtil.extractUserId(token))) throw new ErrorException(Error.PERMISSION_DENIED);
+        Long userId = jwtUtil.extractUserId(token);
         userService.subscribeDepartment(userId, departmentId);
         return new ApiResponse<>("Subscribed successfully");
     }
 
-    @DeleteMapping("/{userId}/subscriptions/{departmentId}")
-    public ApiResponse<Void> unsubscribeDepartment(@PathVariable("userId") Long userId,
-                                                   @PathVariable("departmentId") Long departmentId,
+    @DeleteMapping("/subscriptions/{departmentId}")
+    public ApiResponse<Void> unsubscribeDepartment(@PathVariable("departmentId") Long departmentId,
                                                    @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        if (!userId.equals(jwtUtil.extractUserId(token))) throw new ErrorException(Error.PERMISSION_DENIED);
+        Long userId = jwtUtil.extractUserId(token);
         userService.unsubscribeDepartment(userId, departmentId);
         return new ApiResponse<>("Unsubscribed successfully");
     }
