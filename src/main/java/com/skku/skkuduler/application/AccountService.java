@@ -36,7 +36,6 @@ public class AccountService {
     public LoginSuccessDto loginUser(UserLoginRequestDto loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-
             return new LoginSuccessDto(jwtUtil.generateToken(user.getUserId()),user.getUserId());
         }
         return null;
