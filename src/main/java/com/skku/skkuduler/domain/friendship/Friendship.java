@@ -1,6 +1,5 @@
 package com.skku.skkuduler.domain.friendship;
 
-import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

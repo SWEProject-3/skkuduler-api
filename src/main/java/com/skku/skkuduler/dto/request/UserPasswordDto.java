@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddCalenderEventDto {
-    private Long fromCalenderId;
+public class UserPasswordDto {
+    private String password;
 }

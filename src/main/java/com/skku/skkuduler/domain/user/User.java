@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity(name = "user")
+@Table(
+        uniqueConstraints = @UniqueConstraint(columnNames = {"email","is_available"})
+)
 @Getter
 @Builder
 @AllArgsConstructor
@@ -20,7 +23,7 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)

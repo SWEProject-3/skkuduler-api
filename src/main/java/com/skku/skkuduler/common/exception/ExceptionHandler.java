@@ -15,7 +15,7 @@ public class ExceptionHandler {
 
         ErrorDTO errorDTO = new ErrorDTO(
                 Error.INVALID_FIELD.getStatus(),
-                ex.getMessage(),
+                Error.INVALID_FIELD.getMsg(),
                 Error.INVALID_FIELD.getCode()
         );
 

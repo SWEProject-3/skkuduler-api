@@ -38,7 +38,7 @@ public class AccountService {
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             return new LoginSuccessDto(jwtUtil.generateToken(user.getUserId()),user.getUserId());
         }
-        return null;
+        throw new ErrorException(Error.LOGIN_FAILED);
     }
     @Transactional
     public void changePassword(String token, String oldPassword, String newPassword){
