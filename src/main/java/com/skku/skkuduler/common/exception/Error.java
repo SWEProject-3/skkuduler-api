@@ -18,6 +18,7 @@ public enum Error {
     FAILED_FRIEND_REQUEST(400, "400_008", "친구 요청에 실패하였습니다."),
     FRIEND_REQUEST_ALREADY_SENT(400, "400_009", "이미 해당 유저에게 친구요청을 보냈습니다."),
     INVALID_FRIEND_REQUEST(400,"400_010","잘못된 친구요청 입니다"),
+    ALREADY_FRIEND(400, "400_011", "이미 친구입니다."),
 
     //401,
     LOGIN_FAILED(401, "401_000", "로그인에 실패하였습니다."),
@@ -27,7 +28,6 @@ public enum Error {
     WRONG_TOKEN(401, "401_004", "없거나 형식이 올바르지 않은 토큰 입니다."),
     NOT_SUBSCRIBED(401,"401_005","구독하지 않은 학과입니다."),
     NOT_FRIEND(401,"401_006","친구가 아닙니다."),
-    ALREADY_FRIEND(401, "401_007", "이미 친구입니다."),
 
     //404
     EVENT_NOT_FOUND(404,"404_000", "해당 일정을 찾을 수 없습니다."),

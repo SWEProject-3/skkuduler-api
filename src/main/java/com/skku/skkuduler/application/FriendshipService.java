@@ -4,7 +4,6 @@ import com.skku.skkuduler.common.exception.Error;
 import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.domain.friendship.Friendship;
 import com.skku.skkuduler.domain.friendship.Friendship.FriendshipStatus;
-import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.dto.response.FriendInfoDto;
 import com.skku.skkuduler.infrastructure.FriendshipRepository;
 import com.skku.skkuduler.infrastructure.UserRepository;

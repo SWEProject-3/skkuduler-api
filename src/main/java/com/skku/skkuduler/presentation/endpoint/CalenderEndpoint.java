@@ -7,9 +7,9 @@ import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.dto.request.*;
 import com.skku.skkuduler.dto.response.CalenderEventDetailDto;
-import com.skku.skkuduler.dto.response.CalenderInfoDto;
 import com.skku.skkuduler.dto.response.EventSummaryDto;
 import com.skku.skkuduler.presentation.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +48,7 @@ public class CalenderEndpoint {
 
     // 개인 일정 생성하여, 달력에 추가하기
     @PostMapping("/calenders/events")
-    public ApiResponse<Void> createCalenderEvent(EventCreationDto eventCreationDto,
+    public ApiResponse<Void> createCalenderEvent(@Valid EventCreationDto eventCreationDto,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
         calenderService.createUserCalenderEvent(userId, eventCreationDto);
@@ -65,7 +65,7 @@ public class CalenderEndpoint {
     }
 
     @PutMapping("/calenders/events/{eventId}")
-    public ApiResponse<Void> updateCalenderEvent(EventUpdateDto eventUpdateDto,
+    public ApiResponse<Void> updateCalenderEvent(@Valid EventUpdateDto eventUpdateDto,
                                                  @PathVariable Long eventId,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);

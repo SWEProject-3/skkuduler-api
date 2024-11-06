@@ -35,8 +35,8 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
         f.status
     )
     FROM friendship f
-    INNER JOIN user u1 ON f.fromUserId = u1.userId
-    INNER JOIN user u2 ON f.toUserId = u2.userId
+    INNER JOIN user u1 ON f.fromUserId = u1.userId AND u1.deletedAt IS NULL
+    INNER JOIN user u2 ON f.toUserId = u2.userId AND u2.deletedAt IS NULL
     WHERE f.status = 'ACCEPTED' AND (f.fromUserId = :userId OR f.toUserId = :userId)
     """)
     List<FriendInfoDto> getFriendInfoDtosByUserIdAndAccepted(@Param("userId") Long userId);
