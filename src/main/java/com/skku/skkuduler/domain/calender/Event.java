@@ -1,10 +1,8 @@
 package com.skku.skkuduler.domain.calender;
 
-import com.skku.skkuduler.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,7 @@ public class Event{
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     @Builder.Default
-    private List<CalenderEvent> calenderEvents = new ArrayList<>();
+    private List<CalendarEvent> calendarEvents = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT")
     private String content;

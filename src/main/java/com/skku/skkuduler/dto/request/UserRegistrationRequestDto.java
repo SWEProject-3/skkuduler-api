@@ -21,6 +21,6 @@ public class UserRegistrationRequestDto {
     private String password;
 
     @NotBlank(message = "Please enter your name.")
-    @Pattern(regexp = "^[가-힣a-zA-Z]+$", message = "Name must consist of 2-10 characters and contain only Korean or English letters.")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$|^[가-힣]+$", message = "Name must contain only Korean characters or English letters with spaces.")
     private String name;
 }

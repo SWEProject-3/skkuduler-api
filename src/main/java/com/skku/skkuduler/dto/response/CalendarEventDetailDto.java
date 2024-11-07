@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CalenderEventDetailDto {
+public class CalendarEventDetailDto {
     private Boolean isDepartmentEvent;
     private Long ownerUserId;
     private String ownerName;
