@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Permission extends BaseEntity {
+public class Permission{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long permissionId;

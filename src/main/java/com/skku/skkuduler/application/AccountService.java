@@ -3,7 +3,7 @@ package com.skku.skkuduler.application;
 import com.skku.skkuduler.common.exception.Error;
 import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.common.security.JwtUtil;
-import com.skku.skkuduler.domain.calender.Calender;
+import com.skku.skkuduler.domain.calender.Calendar;
 import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.dto.request.UserLoginRequestDto;
 import com.skku.skkuduler.dto.request.UserRegistrationRequestDto;
@@ -28,8 +28,8 @@ public class AccountService {
         user.changeName(userRequest.getName());
         user.changePassword(passwordEncoder.encode(userRequest.getPassword()));
         user.changeRole(User.Role.USER);
-        Calender calender = Calender.userCalender(user);
-        user.changeCalender(calender);
+        Calendar calendar = Calendar.of(user);
+        user.changeCalender(calendar);
         userRepository.save(user);
     }
     @Transactional(readOnly = true)

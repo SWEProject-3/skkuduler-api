@@ -5,27 +5,27 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "calender_event")
+@Entity(name = "calendar_event")
 @Table(
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"event_id", "calender_id"})
+                @UniqueConstraint(columnNames = {"event_id", "calendar_id"})
         }
 )
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CalenderEvent {
+public class CalendarEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long calenderEventId;
+    private Long calendarEventId;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "event_id")
     private Event event;
 
     @ManyToOne
-    @JoinColumn(name = "calender_id")
-    private Calender calender;
+    @JoinColumn(name = "calendar_id")
+    private Calendar calendar;
 
 }

@@ -1,5 +1,6 @@
 package com.skku.skkuduler.domain.calender;
 
+import com.skku.skkuduler.domain.department.Department;
 import com.skku.skkuduler.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,16 +16,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Entity(name = "calender")
+@Entity(name = "calendar")
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Calender {
+public class Calendar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long calenderId;
+    private Long calendarId;
 
     @Column(nullable = false)
     private String name;
@@ -33,41 +34,41 @@ public class Calender {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(updatable = false)
-    private Long departmentId;
+    @OneToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
 
-    @Column(updatable = false)
+    //virtual column
+    @Column(updatable = false, insertable = false)
     private Boolean isGlobal;
 
-    @OneToMany(mappedBy = "calender", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CalenderEvent> calenderEvents = new ArrayList<>();
+    @OneToMany(mappedBy = "calendar", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CalendarEvent> calendarEvents = new ArrayList<>();
 
     //팩토리
-    public static Calender userCalender(User user) {
-        return Calender.builder()
+    public static Calendar of(User user) {
+        return Calendar.builder()
                 .user(user)
-                .isGlobal(false)
                 .build();
     }
     //팩토리
-    public static Calender deptCalender(Long departmentId) {
-        return Calender.builder()
-                .departmentId(departmentId)
-                .isGlobal(true)
+    public static Calendar of(Department department) {
+        return Calendar.builder()
+                .department(department)
                 .build();
     }
 
     public void addEvent(Event event) {
-        CalenderEvent calenderEvent = new CalenderEvent(null, event, this);
-        this.calenderEvents.add(calenderEvent);
+        CalendarEvent calendarEvent = new CalendarEvent(null, event, this);
+        this.calendarEvents.add(calendarEvent);
     }
 
     public Optional<Event> getEvent(Long eventId) {
-        return calenderEvents.stream().map(CalenderEvent::getEvent).filter(event -> event.getEventId().equals(eventId)).findFirst();
+        return calendarEvents.stream().map(CalendarEvent::getEvent).filter(event -> event.getEventId().equals(eventId)).findFirst();
     }
 
     public boolean removeEvent(Event event) {
-        return calenderEvents.removeIf(calenderEvent -> calenderEvent.getEvent().getEventId().equals(event.getEventId()));
+        return calendarEvents.removeIf(calendarEvent -> calendarEvent.getEvent().getEventId().equals(event.getEventId()));
     }
 
     public void changeName(String name) {
@@ -78,8 +79,8 @@ public class Calender {
         LocalDateTime startDateTime = startDate.atStartOfDay(); // 00:00:00
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX); // 23:59:59
 
-        return calenderEvents.stream()
-                .map(CalenderEvent::getEvent)
+        return calendarEvents.stream()
+                .map(CalendarEvent::getEvent)
                 .filter(event -> !event.getStartDateTime().isAfter(endDateTime) && !event.getEndDateTime().isBefore(startDateTime))
                 .collect(Collectors.toList());
     }

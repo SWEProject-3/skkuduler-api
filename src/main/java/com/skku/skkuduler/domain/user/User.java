@@ -1,7 +1,7 @@
 package com.skku.skkuduler.domain.user;
 
 import com.skku.skkuduler.domain.BaseEntity;
-import com.skku.skkuduler.domain.calender.Calender;
+import com.skku.skkuduler.domain.calender.Calendar;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +37,7 @@ public class User extends BaseEntity {
     private Role role;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Calender calender;
+    private Calendar calendar;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subscription> subscriptions;
@@ -54,8 +54,8 @@ public class User extends BaseEntity {
         return User.builder().userId(userId).build();
     }
 
-    public void changeCalender(Calender calender){
-        if(calender != null) this.calender = calender;
+    public void changeCalender(Calendar calendar){
+        if(calendar != null) this.calendar = calendar;
     }
 
     public void subscribeDepartment(Long departmentId) {
