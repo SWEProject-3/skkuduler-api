@@ -16,6 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("""
     SELECT u
     FROM user u
+    LEFT JOIN FETCH u.calendar
     WHERE u.userId = :userId AND u.deletedAt IS NULL
     """)
     @NonNull

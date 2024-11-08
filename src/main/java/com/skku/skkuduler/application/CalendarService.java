@@ -146,33 +146,37 @@ public class CalendarService {
     }
 
     @Transactional(readOnly = true)
-    public CalendarEventDetailDto getCalenderEvent(Long eventId) {
-        Event calenderEvent = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
-
-        EventInfo eventInfo = new EventInfo(calenderEvent.getEventId(), calenderEvent.getTitle(), calenderEvent.getContent()
-                , calenderEvent.getColorCode(), calenderEvent.getStartDateTime(), calenderEvent.getEndDateTime());
-
-        List<ImageInfo> images = calenderEvent.getImages().stream()
-                .map(image -> new ImageInfo(baseUrl + image.getSrc(), image.getOrder()))
-                .toList();
-
+    public CalendarEventDetailDto getCalenderEvent(Long eventId ,Long userId) {
+//        Event event = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
+//
+//        EventInfo eventInfo = new EventInfo(event.getEventId(), event.getTitle(), event.getContent()
+//                , event.getColorCode(), event.getStartDateTime(), event.getEndDateTime());
+//
+//        List<ImageInfo> images = event.getImages().stream()
+//                .map(image -> new ImageInfo(baseUrl + image.getSrc(), image.getOrder()))
+//                .toList();
+//
+        boolean isAddedToMyCalender = userRepository.findById(userId).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
+                .getCalendar().existsEvent(eventId);
         CalendarEventDetailDto calendarEventDetailDto = builder()
-                .eventInfo(eventInfo)
-                .images(images)
+//                .eventInfo(eventInfo)
+//                .images(images)
+                .isMyEvent(false)
+                .isAddedToMyCalendar(isAddedToMyCalender)
                 .build();
-
-        if (calenderEvent.getIsUserEvent()) { // 유저 이벤트인경우
-            calendarEventDetailDto.setIsDepartmentEvent(false);
-            String userName = userRepository.findById(calenderEvent.getUserId()).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND)).getName();
-            calendarEventDetailDto.setOwnerName(userName);
-            calendarEventDetailDto.setOwnerUserId(calenderEvent.getUserId());
-        } else { // 학과 이벤트인 경우
-            calendarEventDetailDto.setIsDepartmentEvent(true);
-            String departmentName = departmentRepository.findById(calenderEvent.getDepartmentId()).orElseThrow(() -> new ErrorException(Error.DEPARTMENT_NOT_FOUND)).getName();
-            calendarEventDetailDto.setDepartmentName(departmentName);
-            calendarEventDetailDto.setDepartmentId(calenderEvent.getDepartmentId());
-        }
-
+//        if (event.getIsUserEvent()) { // 유저 이벤트인경우
+//            calendarEventDetailDto.setIsDepartmentEvent(false);
+//            String userName = userRepository.findById(event.getUserId()).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND)).getName();
+//            calendarEventDetailDto.setOwnerName(userName);
+//            calendarEventDetailDto.setOwnerUserId(event.getUserId());
+//            calendarEventDetailDto.setIsMyEvent(event.getUserId().equals(userId));
+//        } else { // 학과 이벤트인 경우
+//            calendarEventDetailDto.setIsDepartmentEvent(true);
+//            String departmentName = departmentRepository.findById(event.getDepartmentId()).orElseThrow(() -> new ErrorException(Error.DEPARTMENT_NOT_FOUND)).getName();
+//            calendarEventDetailDto.setDepartmentName(departmentName);
+//            calendarEventDetailDto.setDepartmentId(event.getDepartmentId());
+//        }
+//
         return calendarEventDetailDto;
     }
 }

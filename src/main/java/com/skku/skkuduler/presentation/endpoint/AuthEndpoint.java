@@ -2,8 +2,6 @@ package com.skku.skkuduler.presentation.endpoint;
 
 import com.skku.skkuduler.application.AccountService;
 import com.skku.skkuduler.application.AuthService;
-import com.skku.skkuduler.common.exception.Error;
-import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.dto.request.PasswordChangeDto;
 import com.skku.skkuduler.dto.request.UserLoginRequestDto;
 import com.skku.skkuduler.dto.request.UserRegistrationRequestDto;

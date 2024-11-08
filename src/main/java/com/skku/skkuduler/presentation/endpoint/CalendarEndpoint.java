@@ -106,8 +106,8 @@ public class CalendarEndpoint {
     public ApiResponse<CalendarEventDetailDto> getCalenderEventDetail(
             @PathVariable Long eventId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long viewerID = jwtUtil.extractUserId(token);
-        return new ApiResponse<>(calendarService.getCalenderEvent(eventId));
+        Long userId = jwtUtil.extractUserId(token);
+        return new ApiResponse<>(calendarService.getCalenderEvent(eventId, userId));
 
     }
 

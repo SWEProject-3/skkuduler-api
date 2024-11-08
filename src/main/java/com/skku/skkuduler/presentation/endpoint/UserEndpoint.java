@@ -3,8 +3,6 @@ package com.skku.skkuduler.presentation.endpoint;
 
 import com.skku.skkuduler.application.DepartmentService;
 import com.skku.skkuduler.application.UserService;
-import com.skku.skkuduler.common.exception.Error;
-import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.dto.request.ProfileUpdateDto;
 import com.skku.skkuduler.dto.request.UserPasswordDto;

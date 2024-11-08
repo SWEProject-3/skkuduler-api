@@ -1,20 +1,20 @@
-package com.skku.skkuduler.dto.response;
+package com.skku.skkuduler.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.skku.skkuduler.domain.calender.Event;
+import com.skku.skkuduler.domain.calender.Image;
+import com.skku.skkuduler.dto.response.EventInfo;
+import com.skku.skkuduler.dto.response.ImageInfo;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-//TODO 좋아요 수
-public class CalendarEventDetailDto {
+public class EventDetail {
     private Boolean isDepartmentEvent;
     private Boolean isMyEvent;
     private Boolean isAddedToMyCalendar;
@@ -22,7 +22,6 @@ public class CalendarEventDetailDto {
     private String ownerName;
     private Long departmentId;
     private String departmentName;
-    private EventInfo eventInfo;
-    private List<ImageInfo> images;
-
+    private Event event;
+    private List<Image> images;
 }
