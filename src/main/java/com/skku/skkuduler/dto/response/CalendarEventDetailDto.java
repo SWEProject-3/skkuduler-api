@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 //TODO 좋아요 수
 public class CalendarEventDetailDto {
+    private Long eventId;
     private Boolean isDepartmentEvent;
     private Boolean isMyEvent;
     private Boolean isAddedToMyCalendar;
@@ -25,4 +26,27 @@ public class CalendarEventDetailDto {
     private EventInfo eventInfo;
     private List<ImageInfo> images;
 
+    @Data
+    @AllArgsConstructor
+    @Builder
+    @NoArgsConstructor
+    public static class EventInfo{
+        private Long eventId;
+        private String title;
+        private String content;
+        private String colorCode;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+        private LocalDateTime startDateTime;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+        private LocalDateTime endDateTime;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ImageInfo{
+        private String imageUrl;
+        private int order;
+    }
 }

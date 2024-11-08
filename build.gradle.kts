@@ -25,6 +25,27 @@ repositories {
 	mavenCentral()
 }
 
+val querydslDir = file("$buildDir/generated/querydsl")
+val queryDslVersion = "5.0.0"
+
+sourceSets {
+    getByName("main").java.srcDirs(querydslDir)
+}
+
+tasks.withType<JavaCompile> {
+   // options.generatedSourceOutputDirectory = file(querydslDir)
+
+    // 위의 설정이 안되면 아래 설정 사용
+    options.generatedSourceOutputDirectory.set(file(querydslDir))
+}
+
+tasks.named("clean") {
+    doLast {
+        file(querydslDir).deleteRecursively()
+    }
+}
+
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-web-services")
@@ -39,7 +60,10 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
     implementation("mysql:mysql-connector-java:8.0.32")
-
+    implementation ("com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta")
+    annotationProcessor("com.querydsl:querydsl-apt:${queryDslVersion}:jakarta")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
