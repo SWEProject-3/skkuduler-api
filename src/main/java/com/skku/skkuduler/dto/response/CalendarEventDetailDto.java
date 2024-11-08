@@ -13,8 +13,12 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+//TODO 좋아요 수
 public class CalendarEventDetailDto {
+    private Long eventId;
     private Boolean isDepartmentEvent;
+    private Boolean isMyEvent;
+    private Boolean isAddedToMyCalendar;
     private Long ownerUserId;
     private String ownerName;
     private Long departmentId;
@@ -24,6 +28,7 @@ public class CalendarEventDetailDto {
 
     @Data
     @AllArgsConstructor
+    @Builder
     @NoArgsConstructor
     public static class EventInfo{
         private Long eventId;
@@ -37,6 +42,7 @@ public class CalendarEventDetailDto {
     }
 
     @Data
+    @Builder
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ImageInfo{

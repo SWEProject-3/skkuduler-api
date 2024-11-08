@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.skku.skkuduler.dto.response.CalendarEventDetailDto.*;
-
 @Service
 @RequiredArgsConstructor
 public class CalendarService {
@@ -146,33 +144,9 @@ public class CalendarService {
     }
 
     @Transactional(readOnly = true)
-    public CalendarEventDetailDto getCalenderEvent(Long eventId) {
-        Event calenderEvent = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
-
-        EventInfo eventInfo = new EventInfo(calenderEvent.getEventId(), calenderEvent.getTitle(), calenderEvent.getContent()
-                , calenderEvent.getColorCode(), calenderEvent.getStartDateTime(), calenderEvent.getEndDateTime());
-
-        List<ImageInfo> images = calenderEvent.getImages().stream()
-                .map(image -> new ImageInfo(baseUrl + image.getSrc(), image.getOrder()))
-                .toList();
-
-        CalendarEventDetailDto calendarEventDetailDto = builder()
-                .eventInfo(eventInfo)
-                .images(images)
-                .build();
-
-        if (calenderEvent.getIsUserEvent()) { // 유저 이벤트인경우
-            calendarEventDetailDto.setIsDepartmentEvent(false);
-            String userName = userRepository.findById(calenderEvent.getUserId()).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND)).getName();
-            calendarEventDetailDto.setOwnerName(userName);
-            calendarEventDetailDto.setOwnerUserId(calenderEvent.getUserId());
-        } else { // 학과 이벤트인 경우
-            calendarEventDetailDto.setIsDepartmentEvent(true);
-            String departmentName = departmentRepository.findById(calenderEvent.getDepartmentId()).orElseThrow(() -> new ErrorException(Error.DEPARTMENT_NOT_FOUND)).getName();
-            calendarEventDetailDto.setDepartmentName(departmentName);
-            calendarEventDetailDto.setDepartmentId(calenderEvent.getDepartmentId());
-        }
-
-        return calendarEventDetailDto;
+    public CalendarEventDetailDto getCalenderEvent(Long eventId ,Long userId) {
+        CalendarEventDetailDto response = eventRepository.getEventDetail(eventId,userId);
+        if(response == null) throw new ErrorException(Error.EVENT_NOT_FOUND);
+        return response;
     }
 }

@@ -6,12 +6,9 @@ import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.domain.calender.Event;
 import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.dto.response.UserInfoDto;
-import com.skku.skkuduler.infrastructure.CalenderRepository;
 import com.skku.skkuduler.infrastructure.EventRepository;
-import com.skku.skkuduler.infrastructure.FriendshipRepository;
 import com.skku.skkuduler.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

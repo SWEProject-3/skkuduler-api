@@ -58,6 +58,10 @@ public class Calendar {
                 .build();
     }
 
+    public boolean existsEvent(Long eventId){
+        return calendarEvents.stream().map(CalendarEvent::getEvent).anyMatch(event -> event.getEventId().equals(eventId));
+    }
+
     public void addEvent(Event event) {
         CalendarEvent calendarEvent = new CalendarEvent(null, event, this);
         this.calendarEvents.add(calendarEvent);

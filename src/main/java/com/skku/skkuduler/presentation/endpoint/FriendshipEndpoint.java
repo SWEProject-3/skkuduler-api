@@ -1,8 +1,6 @@
 package com.skku.skkuduler.presentation.endpoint;
 
 import com.skku.skkuduler.application.FriendshipService;
-import com.skku.skkuduler.common.exception.Error;
-import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.dto.request.FriendshipRequestDto;
 import com.skku.skkuduler.dto.response.FriendInfoDto;
