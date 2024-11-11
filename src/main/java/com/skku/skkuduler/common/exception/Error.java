@@ -19,7 +19,8 @@ public enum Error {
     FRIEND_REQUEST_ALREADY_SENT(400, "400_009", "이미 해당 유저에게 친구요청을 보냈습니다."),
     INVALID_FRIEND_REQUEST(400,"400_010","잘못된 친구요청 입니다"),
     ALREADY_FRIEND(400, "400_011", "이미 친구입니다."),
-
+    ALREADY_LIKE(400,"400_012", "이미 좋아요를 했습니다"),
+    INVALID_UNLIKE(400,"400_013","좋아요 취소를 할 수 없습니다"),
     //401,
     LOGIN_FAILED(401, "401_000", "로그인에 실패하였습니다."),
     PERMISSION_DENIED(401, "401_001", "접근 권한이 없습니다."),
