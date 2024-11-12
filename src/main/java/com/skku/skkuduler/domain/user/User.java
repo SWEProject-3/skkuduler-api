@@ -45,6 +45,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Permission> permissions;
 
+    @Column(updatable = false, insertable = false)
+    private boolean isAvailable;
+
     public enum Role {
         ADMIN,
         USER

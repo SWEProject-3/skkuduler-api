@@ -37,6 +37,7 @@ public enum Error {
     CALENDER_NOT_FOUND(404,"404_003", "해당 달력을 찾을 수 없습니다."),
     FRIENDSHIP_NOT_FOUND(404,"404_004" , "해당 친구관계를 찾을 수 없습니다."),
     FRIEND_REQUEST_NOT_FOUND(404, "404_005", "해당 친구요청을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(404,"404_006","해당 댓글을 찾을 수 없습니다."),
     //500
     FILE_STORE_ERROR(500, "500,000","파일 저장에 실패하였습니다.");
 
