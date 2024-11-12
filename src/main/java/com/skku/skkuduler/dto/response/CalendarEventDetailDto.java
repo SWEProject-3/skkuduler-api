@@ -23,6 +23,7 @@ public class CalendarEventDetailDto {
     private String ownerName;
     private Long departmentId;
     private String departmentName;
+    private int likeCount;
     private EventInfo eventInfo;
     private List<ImageInfo> images;
 

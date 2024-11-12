@@ -40,11 +40,13 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
                 .join(calendarEvent.calendar, calendar)
                 .where(calendar.user.userId.eq(userId).and(calendarEvent.event.eventId.eq(eventId)))
                 .fetchFirst() != null;
+
         List<CalendarEventDetailDto> response = jpaQueryFactory
                 .selectFrom(event)
                 .distinct()
                 .leftJoin(user).on(event.userId.eq(user.userId))
                 .leftJoin(department).on(event.departmentId.eq(department.departmentId))
+                .leftJoin(like).on(like.eventId.eq(event.eventId))
                 .leftJoin(event.images,image)
                 .where(event.eventId.eq(eventId))
                 .orderBy(image.order.asc())
@@ -57,6 +59,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
                         Expressions.asString(user.name).as("ownerName"),
                         Expressions.asNumber(department.departmentId).as("departmentId"),
                         Expressions.asString(department.name).as("departmentName"),
+                        Expressions.asNumber(like.count().coalesce(0)).as("likeCount"),
                         Projections.constructor(CalendarEventDetailDto.EventInfo.class,
                                 event.eventId,
                                 event.title,
