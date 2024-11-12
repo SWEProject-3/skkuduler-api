@@ -16,6 +16,8 @@ import java.util.List;
 //TODO 좋아요 수
 public class CalendarEventDetailDto {
     private Long eventId;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime createdAt;
     private Boolean isDepartmentEvent;
     private Boolean isMyEvent;
     private Boolean isAddedToMyCalendar;
@@ -23,7 +25,7 @@ public class CalendarEventDetailDto {
     private String ownerName;
     private Long departmentId;
     private String departmentName;
-    private int likeCount;
+    private Long likeCount;
     private EventInfo eventInfo;
     private List<ImageInfo> images;
 

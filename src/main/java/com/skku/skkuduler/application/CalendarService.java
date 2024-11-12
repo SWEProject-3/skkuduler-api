@@ -147,6 +147,7 @@ public class CalendarService {
     public CalendarEventDetailDto getCalenderEvent(Long eventId ,Long userId) {
         CalendarEventDetailDto response = eventRepository.getEventDetail(eventId,userId);
         if(response == null) throw new ErrorException(Error.EVENT_NOT_FOUND);
+        response.setImages(response.getImages().stream().map(imageInfo -> new CalendarEventDetailDto.ImageInfo(baseUrl + imageInfo.getImageUrl() , imageInfo.getOrder())).toList());
         return response;
     }
 }
