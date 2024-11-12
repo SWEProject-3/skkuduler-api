@@ -51,7 +51,7 @@ public class UserService {
     public void withdraw(Long userId, String password) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));
         if(!passwordEncoder.matches(password, user.getPassword())) throw new ErrorException(Error.PERMISSION_DENIED);
-        user.delete();
+        user.softDelete();
         userRepository.save(user);
     }
 }
