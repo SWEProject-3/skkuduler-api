@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventSummaryDto {
+public class CalendarEventSummaryDto {
     private Long eventId;
     private String title;
     private String colorCode;
@@ -19,4 +19,5 @@ public class EventSummaryDto {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime endDateTime;
+
 }

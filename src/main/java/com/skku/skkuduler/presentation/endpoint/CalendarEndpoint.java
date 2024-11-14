@@ -7,7 +7,7 @@ import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.dto.request.*;
 import com.skku.skkuduler.dto.response.CalendarEventDetailDto;
-import com.skku.skkuduler.dto.response.EventSummaryDto;
+import com.skku.skkuduler.dto.response.CalendarEventSummaryDto;
 import com.skku.skkuduler.presentation.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +29,12 @@ public class CalendarEndpoint {
 
     //TODO -> 권한 체크 (친구)
     @GetMapping("/users/{userId}/calendars/events")
-    public ApiResponse<List<EventSummaryDto>> getsUserCalenderEvents(@PathVariable("userId") Long userId,
-                                                                     @RequestParam(value = "rangeSearch", defaultValue = "false") boolean rangeSearch,
-                                                                     @RequestParam(required = false, name = "startDate") LocalDate startDate,
-                                                                     @RequestParam(required = false, name = "endDate") LocalDate endDate,
-                                                                     @RequestParam(required = false, name = "yearMonth") YearMonth yearMonth,
-                                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public ApiResponse<List<CalendarEventSummaryDto>> getsUserCalenderEvents(@PathVariable("userId") Long userId,
+                                                                             @RequestParam(value = "rangeSearch", defaultValue = "false") boolean rangeSearch,
+                                                                             @RequestParam(required = false, name = "startDate") LocalDate startDate,
+                                                                             @RequestParam(required = false, name = "endDate") LocalDate endDate,
+                                                                             @RequestParam(required = false, name = "yearMonth") YearMonth yearMonth,
+                                                                             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if (!rangeSearch) {
             if (yearMonth == null) throw new ErrorException(Error.INVALID_URL_PARAMETERS);
             startDate = yearMonth.atDay(1);
@@ -47,12 +47,12 @@ public class CalendarEndpoint {
     }
 
     @GetMapping("/departments/{departmentId}/calendars/events")
-    public ApiResponse<List<EventSummaryDto>> getsDeptCalenderEvents(@PathVariable("departmentId") Long departmentId,
-                                                                     @RequestParam(value = "rangeSearch", defaultValue = "false") boolean rangeSearch,
-                                                                     @RequestParam(required = false, name = "startDate") LocalDate startDate,
-                                                                     @RequestParam(required = false, name = "endDate") LocalDate endDate,
-                                                                     @RequestParam(required = false, name = "yearMonth") YearMonth yearMonth,
-                                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public ApiResponse<List<CalendarEventSummaryDto>> getsDeptCalenderEvents(@PathVariable("departmentId") Long departmentId,
+                                                                             @RequestParam(value = "rangeSearch", defaultValue = "false") boolean rangeSearch,
+                                                                             @RequestParam(required = false, name = "startDate") LocalDate startDate,
+                                                                             @RequestParam(required = false, name = "endDate") LocalDate endDate,
+                                                                             @RequestParam(required = false, name = "yearMonth") YearMonth yearMonth,
+                                                                             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if (!rangeSearch) {
             if (yearMonth == null) throw new ErrorException(Error.INVALID_URL_PARAMETERS);
             startDate = yearMonth.atDay(1);

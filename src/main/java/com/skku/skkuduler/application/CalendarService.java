@@ -8,7 +8,7 @@ import com.skku.skkuduler.domain.calender.Image;
 import com.skku.skkuduler.dto.request.EventCreationDto;
 import com.skku.skkuduler.dto.request.EventUpdateDto;
 import com.skku.skkuduler.dto.response.CalendarEventDetailDto;
-import com.skku.skkuduler.dto.response.EventSummaryDto;
+import com.skku.skkuduler.dto.response.CalendarEventSummaryDto;
 import com.skku.skkuduler.infrastructure.CalenderRepository;
 import com.skku.skkuduler.infrastructure.DepartmentRepository;
 import com.skku.skkuduler.infrastructure.EventRepository;
@@ -36,7 +36,7 @@ public class CalendarService {
 
 
     @Transactional(readOnly = true)
-    public List<EventSummaryDto> getEventsBetween(Long departmentId, Long userId, LocalDate startDate, LocalDate endDate) {
+    public List<CalendarEventSummaryDto> getEventsBetween(Long departmentId, Long userId, LocalDate startDate, LocalDate endDate) {
         Calendar calendar = userId != null
 
                 ? userRepository.findById(userId)
@@ -49,7 +49,7 @@ public class CalendarService {
 
         return calendar.getEventsBetween(startDate, endDate).stream().map(
                 event ->
-                        new EventSummaryDto(
+                        new CalendarEventSummaryDto(
                                 event.getEventId(),
                                 event.getTitle(),
                                 event.getColorCode(),
@@ -147,6 +147,7 @@ public class CalendarService {
     public CalendarEventDetailDto getCalenderEvent(Long eventId ,Long userId) {
         CalendarEventDetailDto response = eventRepository.getEventDetail(eventId,userId);
         if(response == null) throw new ErrorException(Error.EVENT_NOT_FOUND);
+        response.setImages(response.getImages().stream().map(imageInfo -> new CalendarEventDetailDto.ImageInfo(baseUrl + imageInfo.getImageUrl() , imageInfo.getOrder())).toList());
         return response;
     }
 }
