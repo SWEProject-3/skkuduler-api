@@ -42,6 +42,7 @@ public class Calendar {
     @Column(updatable = false, insertable = false)
     private Boolean isGlobal;
 
+    @Builder.Default
     @OneToMany(mappedBy = "calendar", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CalendarEvent> calendarEvents = new ArrayList<>();
 

@@ -4,6 +4,7 @@ import com.skku.skkuduler.common.exception.Error;
 import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.dto.request.ProfileUpdateDto;
+import com.skku.skkuduler.dto.response.UserProfileDto;
 import com.skku.skkuduler.infrastructure.DepartmentRepository;
 import com.skku.skkuduler.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -53,5 +54,9 @@ public class UserService {
         if(!passwordEncoder.matches(password, user.getPassword())) throw new ErrorException(Error.PERMISSION_DENIED);
         user.softDelete();
         userRepository.save(user);
+    }
+
+    public UserProfileDto getUserProfileDto(Long userId, Long viewerId) {
+        return userRepository.getUserProfileDto(userId,viewerId).orElseThrow(()-> new ErrorException(Error.USER_NOT_FOUND));
     }
 }

@@ -1,6 +1,7 @@
 package com.skku.skkuduler.infrastructure;
 
 import com.skku.skkuduler.domain.user.User;
+import com.skku.skkuduler.dto.response.UserProfileDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,4 +43,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
     WHERE u.userId = :userId AND u.deletedAt IS NULL
     """)
     boolean existsByUserId(@Param("userId") Long userId);
+    @Query("""
+    SELECT new com.skku.skkuduler.dto.response.UserProfileDto(
+        u.userId,
+        u.name,
+        u.email,
+        CASE WHEN u.userId = :viewerId THEN true ELSE false END,
+        CASE WHEN f IS NOT NULL AND f.status = 'ACCEPTED' THEN true ELSE false END
+    )
+    FROM user u
+    LEFT JOIN friendship f ON (f.toUserId = :userId AND f.fromUserId = :viewerId) OR (f.fromUserId = :userId AND f.toUserId = :viewerId)
+    WHERE u.userId = :userId AND u.deletedAt IS NULL
+    """)
+    Optional<UserProfileDto> getUserProfileDto(@Param("userId") Long userId, @Param("viewerId") Long viewerId);
 }
