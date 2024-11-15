@@ -7,6 +7,7 @@ import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.dto.request.ProfileUpdateDto;
 import com.skku.skkuduler.dto.request.UserPasswordDto;
 import com.skku.skkuduler.dto.response.DepartmentSummaryDto;
+import com.skku.skkuduler.dto.response.UserProfileDto;
 import com.skku.skkuduler.presentation.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,13 @@ public class UserEndpoint {
         Long userId = jwtUtil.extractUserId(token);
         userService.changeProfile(userId, profileUpdateDto);
         return new ApiResponse<>("프로필 수정이 성공적으로 완료되었습니다.");
+    }
+
+    @GetMapping("/{userId}/profiles")
+    public ApiResponse<UserProfileDto> getUserProfile(@PathVariable("userId") Long userId,
+                                                      @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+        Long viewerId = jwtUtil.extractUserId(token);
+        return new ApiResponse<>(userService.getUserProfileDto(userId,viewerId));
     }
 
     @DeleteMapping("/withdraw")
