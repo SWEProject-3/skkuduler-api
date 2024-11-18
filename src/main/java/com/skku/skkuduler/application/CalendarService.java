@@ -39,11 +39,11 @@ public class CalendarService {
     public List<CalendarEventSummaryDto> getEventsBetween(Long departmentId, Long userId, LocalDate startDate, LocalDate endDate) {
         Calendar calendar = userId != null
 
-                ? userRepository.findById(userId)
+                ? userRepository.findByIdFetchCalendar(userId)
                 .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
                 .getCalendar()
 
-                : departmentRepository.findById(departmentId)
+                : departmentRepository.findByIdFetchCalendar(departmentId)
                 .orElseThrow(()-> new ErrorException(Error.DEPARTMENT_NOT_FOUND))
                 .getCalendar();
 
@@ -61,7 +61,7 @@ public class CalendarService {
 
     @Transactional
     public void createUserCalenderEvent(Long userId, EventCreationDto eventCreationDto) {
-        Calendar calendar = userRepository.findById(userId)
+        Calendar calendar = userRepository.findByIdFetchCalendar(userId)
                 .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
                 .getCalendar();
         Event event = Event.userEventOf(userId);
@@ -90,7 +90,7 @@ public class CalendarService {
 
     @Transactional
     public void addUserCalenderEvent(Long userId, Long eventId) {
-        Calendar calendar = userRepository.findById(userId)
+        Calendar calendar = userRepository.findByIdFetchCalendar(userId)
                 .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
                 .getCalendar();
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
@@ -106,7 +106,7 @@ public class CalendarService {
     @Transactional
     public void deleteUserCalenderEvent(Long eventId, Long userId) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
-        Calendar calendar = userRepository.findById(userId)
+        Calendar calendar = userRepository.findByIdFetchCalendar(userId)
                 .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
                 .getCalendar();
         if (!calendar.removeEvent(event)) {

@@ -9,6 +9,7 @@ import com.skku.skkuduler.infrastructure.DepartmentRepository;
 import com.skku.skkuduler.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +57,9 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public UserProfileDto getUserProfileDto(Long userId, Long viewerId) {
         return userRepository.getUserProfileDto(userId,viewerId).orElseThrow(()-> new ErrorException(Error.USER_NOT_FOUND));
     }
+
 }

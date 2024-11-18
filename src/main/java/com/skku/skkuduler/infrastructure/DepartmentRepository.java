@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface DepartmentRepository extends JpaRepository<Department,Long> {
     @Query("""
     SELECT new com.skku.skkuduler.dto.response.DepartmentSearchResponseDto(
@@ -46,4 +48,12 @@ public interface DepartmentRepository extends JpaRepository<Department,Long> {
     INNER JOIN subscription s ON s.departmentId = d.departmentId AND s.user.userId = :userId
     """)
     Page<DepartmentSummaryDto> findDepartmentsSubscribedByUser(Long userId, Pageable pageable);
+
+    @Query("""
+    SELECT DISTINCT d
+    FROM department d
+    LEFT JOIN FETCH d.calendar
+    WHERE d.departmentId = :departmentId
+    """)
+    Optional<Department> findByIdFetchCalendar(@Param("departmentId") Long departmentId);
 }

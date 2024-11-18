@@ -26,15 +26,8 @@ public class UserEndpoint {
     private final UserService userService;
     private final DepartmentService departmentService;
 
-    @GetMapping("/{userId}/subscriptions")
-    public ApiResponse<Page<DepartmentSummaryDto>> getSubscribedDepartments(@PathVariable("userId") Long userId,
-                                                                            @RequestParam(value = "page", defaultValue = "0") int page,
-                                                                            @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        Pageable pageable = PageRequest.of(page, 10);
-        return new ApiResponse<>(departmentService.getSubscribedDepartments(userId, pageable));
-    }
 
-    @PostMapping("/subscriptions/{departmentId}")
+    @PostMapping("/subscriptions/departments/{departmentId}")
     public ApiResponse<Void> subscribeDepartment(@PathVariable("departmentId") Long departmentId,
                                                  @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
@@ -42,7 +35,7 @@ public class UserEndpoint {
         return new ApiResponse<>("Subscribed successfully");
     }
 
-    @DeleteMapping("/subscriptions/{departmentId}")
+    @DeleteMapping("/subscriptions/departments/{departmentId}")
     public ApiResponse<Void> unsubscribeDepartment(@PathVariable("departmentId") Long departmentId,
                                                    @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
