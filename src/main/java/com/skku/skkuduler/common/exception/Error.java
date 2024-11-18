@@ -21,6 +21,7 @@ public enum Error {
     ALREADY_FRIEND(400, "400_011", "이미 친구입니다."),
     ALREADY_LIKE(400,"400_012", "이미 좋아요를 했습니다"),
     INVALID_UNLIKE(400,"400_013","좋아요 취소를 할 수 없습니다"),
+    SUBSCRIPTIONS_NOT_EXIST(400, "400_014", "구독한 학과가 존재하지 않습니다."),
     //401,
     LOGIN_FAILED(401, "401_000", "로그인에 실패하였습니다."),
     PERMISSION_DENIED(401, "401_001", "접근 권한이 없습니다."),
