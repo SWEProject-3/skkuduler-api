@@ -69,7 +69,7 @@ public class CalendarEndpoint {
     public ApiResponse<Void> createCalenderEvent(@Valid EventCreationDto eventCreationDto,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
-        calendarService.createUserCalenderEvent(userId, eventCreationDto);
+        calendarService.createUserCalendarEvent(userId, eventCreationDto);
         return new ApiResponse<>("일정이 성공적으로 생성 되었습니다.");
     }
 
@@ -78,7 +78,7 @@ public class CalendarEndpoint {
     public ApiResponse<Void> addCalenderEvent(@PathVariable Long eventId,
                                               @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
-        calendarService.addUserCalenderEvent(userId, eventId);
+        calendarService.addUserCalendarEvent(userId, eventId);
         return new ApiResponse<>("일정이 성공적으로 추가 되었습니다.");
     }
 
@@ -88,7 +88,7 @@ public class CalendarEndpoint {
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
         authService.checkAuthForWritingEvent(eventId, userId);
-        calendarService.updateUserCalenderEvent(eventId, eventUpdateDto);
+        calendarService.updateCalendarEvent(eventId, eventUpdateDto);
         return new ApiResponse<>("일정이 성공적으로 수정되었습니다.");
     }
 
@@ -96,7 +96,7 @@ public class CalendarEndpoint {
     public ApiResponse<Void> deleteCalenderEvent(@PathVariable Long eventId,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
-        calendarService.deleteUserCalenderEvent(eventId, userId);
+        calendarService.deleteUserCalendarEvent(eventId, userId);
         return new ApiResponse<>("일정이 성공적으로 삭제되었습니다.");
     }
 
@@ -107,7 +107,7 @@ public class CalendarEndpoint {
             @PathVariable Long eventId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
-        return new ApiResponse<>(calendarService.getCalenderEvent(eventId, userId));
+        return new ApiResponse<>(calendarService.getCalendarEvent(eventId, userId));
 
     }
 
