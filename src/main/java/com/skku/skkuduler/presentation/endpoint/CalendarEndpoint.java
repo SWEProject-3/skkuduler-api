@@ -5,6 +5,7 @@ import com.skku.skkuduler.application.CalendarService;
 import com.skku.skkuduler.common.exception.Error;
 import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.common.security.JwtUtil;
+import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.dto.request.*;
 import com.skku.skkuduler.dto.response.CalendarEventDetailDto;
 import com.skku.skkuduler.dto.response.CalendarEventSummaryDto;
@@ -103,12 +104,20 @@ public class CalendarEndpoint {
     //TODO -> 친구인지 체크
     //학과 이벤트인경우 그냥 보여주기, 유저 이벤트인경우 친구 / 내꺼이지 확인
     @GetMapping("/users/calendars/events/{eventId}")
-    public ApiResponse<CalendarEventDetailDto> getCalenderEventDetail(
-            @PathVariable Long eventId,
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public ApiResponse<CalendarEventDetailDto> getCalenderEventDetail(@PathVariable Long eventId,
+                                                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
         return new ApiResponse<>(calendarService.getCalendarEvent(eventId, userId));
 
+    }
+
+    @PostMapping("/departments/calendars/events/bulk")
+    public ApiResponse<Void> createCalenderEvents(@Valid List<EventCreationDto> eventCreationDtos,
+                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        if(jwtUtil.extractRole(token) != User.Role.ADMIN){
+            throw new ErrorException(Error.PERMISSION_DENIED);
+        }
+        calendarService.createCommonDepartmentCalendarEventAll(eventCreationDtos);
     }
 
 

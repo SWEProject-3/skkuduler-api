@@ -13,6 +13,7 @@ import com.skku.skkuduler.infrastructure.CalenderRepository;
 import com.skku.skkuduler.infrastructure.DepartmentRepository;
 import com.skku.skkuduler.infrastructure.EventRepository;
 import com.skku.skkuduler.infrastructure.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +49,15 @@ public class CalendarService {
                 .orElseThrow(() -> new ErrorException(Error.DEPARTMENT_NOT_FOUND))
                 .getCalendar();
 
-        return calendar.getEventsBetween(startDate, endDate).stream().map(
+        List<CalendarEventSummaryDto> commonEvents = eventRepository.findCommonDepartmentEvents().stream()
+                .map(event -> new CalendarEventSummaryDto(
+                        event.getEventId(),
+                        event.getTitle(),
+                        event.getColorCode(),
+                        event.getStartDateTime(),
+                        event.getEndDateTime()
+                )).toList();
+        List<CalendarEventSummaryDto> deptEvent = calendar.getEventsBetween(startDate, endDate).stream().map(
                 event ->
                         new CalendarEventSummaryDto(
                                 event.getEventId(),
@@ -56,7 +66,9 @@ public class CalendarService {
                                 event.getStartDateTime(),
                                 event.getEndDateTime()
                         )
-        ).toList();
+        ).collect(Collectors.toList());
+        deptEvent.addAll(commonEvents);
+        return deptEvent;
     }
 
     @Transactional
@@ -176,5 +188,19 @@ public class CalendarService {
         if (response == null) throw new ErrorException(Error.EVENT_NOT_FOUND);
         response.setImages(response.getImages().stream().map(imageInfo -> new CalendarEventDetailDto.ImageInfo(baseUrl + imageInfo.getImageUrl(), imageInfo.getOrder())).toList());
         return response;
+    }
+
+    @Transactional(readOnly = true)
+    public void createCommonDepartmentCalendarEventAll(@Valid List<EventCreationDto> eventCreationDtos) {
+        List<Event> insertedData = eventCreationDtos.stream()
+                .map(eventCreationDto -> {
+                    Event event = Event.deptEventOf(null); //공동유 학과 event 생성
+                    event.changeTitle(eventCreationDto.getTitle());
+                    event.changeContent(eventCreationDto.getContent());
+                    event.changeDate(eventCreationDto.getStartDateTime(),eventCreationDto.getEndDateTime());
+                    event.changeColorCode("#004028"); //학교 색상
+                    return event;
+                }).toList();
+        eventRepository.saveAll(insertedData);
     }
 }
