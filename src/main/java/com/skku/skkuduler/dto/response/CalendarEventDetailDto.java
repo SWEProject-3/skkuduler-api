@@ -19,6 +19,7 @@ public class CalendarEventDetailDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
     private Boolean isDepartmentEvent;
+    private Boolean isCommonEvent;
     private Boolean isMyEvent;
     private Boolean isAddedToMyCalendar;
     private Long ownerUserId;
