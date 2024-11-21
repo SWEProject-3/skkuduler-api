@@ -33,6 +33,7 @@ public class AuthService {
     }
 
     //TODO : event가 isUserEvent이 아닐때 -> admin과 permission
+    @Transactional(readOnly = true)
     public void checkAuthForWritingEvent(Long eventId, Long userId) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
         if(event.getIsUserEvent()){

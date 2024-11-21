@@ -32,14 +32,16 @@ public class AccountService {
         user.changeCalender(calendar);
         userRepository.save(user);
     }
+
     @Transactional(readOnly = true)
     public LoginSuccessDto loginUser(UserLoginRequestDto loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return new LoginSuccessDto(jwtUtil.generateToken(user.getUserId()),user.getUserId());
+            return new LoginSuccessDto(jwtUtil.generateToken(user.getUserId(), user.getRole()),user.getUserId());
         }
         throw new ErrorException(Error.LOGIN_FAILED);
     }
+
     @Transactional
     public void changePassword(String token, String oldPassword, String newPassword){
         User user = userRepository.findById(jwtUtil.extractUserId(token)).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));

@@ -1,6 +1,7 @@
 package com.skku.skkuduler.common.security;
 
 import com.skku.skkuduler.common.exception.ErrorException;
+import com.skku.skkuduler.domain.user.User;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -37,15 +38,21 @@ public class JwtUtil {
     }
 
     public Long extractUserId(String bearer) {
-        System.out.println(bearer);
         String token = bearer.split(" ")[bearer.split(" ").length - 1];
-        System.out.println(token);
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
     }
 
-    public String generateToken(Long userId) {
+    public User.Role extractRole(String bearer){
+        String token = bearer.split(" ")[bearer.split(" ").length - 1];
+        String role = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
+        System.out.println("role = " + role);
+        return User.Role.valueOf(role);
+    }
+
+    public String generateToken(Long userId, User.Role role) {
         return Jwts.builder()
                 .claim("userId", userId)
+                .claim("role",role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)

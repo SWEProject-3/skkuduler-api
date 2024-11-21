@@ -5,6 +5,7 @@ import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.domain.calender.Calendar;
 import com.skku.skkuduler.domain.calender.Event;
 import com.skku.skkuduler.domain.calender.Image;
+import com.skku.skkuduler.dto.request.CommonEventCreationDto;
 import com.skku.skkuduler.dto.request.EventCreationDto;
 import com.skku.skkuduler.dto.request.EventUpdateDto;
 import com.skku.skkuduler.dto.response.CalendarEventDetailDto;
@@ -13,6 +14,7 @@ import com.skku.skkuduler.infrastructure.CalenderRepository;
 import com.skku.skkuduler.infrastructure.DepartmentRepository;
 import com.skku.skkuduler.infrastructure.EventRepository;
 import com.skku.skkuduler.infrastructure.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,10 +47,19 @@ public class CalendarService {
                 .getCalendar()
 
                 : departmentRepository.findByIdFetchCalendar(departmentId)
-                .orElseThrow(()-> new ErrorException(Error.DEPARTMENT_NOT_FOUND))
+                .orElseThrow(() -> new ErrorException(Error.DEPARTMENT_NOT_FOUND))
                 .getCalendar();
 
-        return calendar.getEventsBetween(startDate, endDate).stream().map(
+        List<CalendarEventSummaryDto> commonEvents = eventRepository.findCommonDepartmentEvents().stream()
+                .map(event -> new CalendarEventSummaryDto(
+                        event.getEventId(),
+                        event.getTitle(),
+                        event.getColorCode(),
+                        event.getStartDateTime(),
+                        event.getEndDateTime()
+                )).toList();
+
+        List<CalendarEventSummaryDto> deptEvent = calendar.getEventsBetween(startDate, endDate).stream().map(
                 event ->
                         new CalendarEventSummaryDto(
                                 event.getEventId(),
@@ -56,19 +68,37 @@ public class CalendarService {
                                 event.getStartDateTime(),
                                 event.getEndDateTime()
                         )
-        ).toList();
+        ).collect(Collectors.toList());
+
+        deptEvent.addAll(commonEvents);
+        return deptEvent;
     }
 
     @Transactional
-    public void createUserCalenderEvent(Long userId, EventCreationDto eventCreationDto) {
-        Calendar calendar = userRepository.findByIdFetchCalendar(userId)
+    public void createUserCalendarEvent(Long userId, EventCreationDto eventCreationDto) {
+        createCalendarEvent(userId, null, eventCreationDto);
+    }
+
+    @Transactional
+    public void createDepartmentCalendarEvent(Long departmentId, EventCreationDto eventCreationDto) {
+        createCalendarEvent(null, departmentId, eventCreationDto);
+    }
+
+    private void createCalendarEvent(Long userId, Long departmentId, EventCreationDto eventCreationDto) {
+        Calendar calendar = userId != null
+                ? userRepository.findByIdFetchCalendar(userId)
                 .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
+                .getCalendar()
+                : departmentRepository.findByIdFetchCalendar(departmentId)
+                .orElseThrow(() -> new ErrorException(Error.DEPARTMENT_NOT_FOUND))
                 .getCalendar();
-        Event event = Event.userEventOf(userId);
+
+        Event event = userId != null ? Event.userEventOf(userId) : Event.deptEventOf(departmentId);
         event.changeTitle(eventCreationDto.getTitle());
         event.changeContent(eventCreationDto.getContent());
         event.changeColorCode(eventCreationDto.getColorCode());
         event.changeDate(eventCreationDto.getStartDateTime(), eventCreationDto.getEndDateTime());
+
         if (eventCreationDto.getImages() != null) {
             List<Image> images = eventCreationDto.getImages().stream()
                     .map(imageInfo -> {
@@ -89,7 +119,7 @@ public class CalendarService {
     }
 
     @Transactional
-    public void addUserCalenderEvent(Long userId, Long eventId) {
+    public void addUserCalendarEvent(Long userId, Long eventId) {
         Calendar calendar = userRepository.findByIdFetchCalendar(userId)
                 .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
                 .getCalendar();
@@ -104,7 +134,7 @@ public class CalendarService {
 
     //유저가 일정 삭제 -> 본인 것은 영구삭제
     @Transactional
-    public void deleteUserCalenderEvent(Long eventId, Long userId) {
+    public void deleteUserCalendarEvent(Long eventId, Long userId) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
         Calendar calendar = userRepository.findByIdFetchCalendar(userId)
                 .orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND))
@@ -119,14 +149,27 @@ public class CalendarService {
         }
     }
 
-    //유저가 유저가 생성한 일정 수정 -> 어드민은 따로 만들 예쩡
     @Transactional
-    public void updateUserCalenderEvent(Long eventId, EventUpdateDto eventUpdateDto) {
+    public void deleteDepartmentCalendarEvent(Long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
+        Calendar calendar = departmentRepository.findByIdFetchCalendar(event.getDepartmentId())
+                .orElseThrow(() -> new ErrorException(Error.DEPARTMENT_NOT_FOUND))
+                .getCalendar();
+        if (!calendar.removeEvent(event)) {
+            throw new ErrorException(Error.INVALID_REMOVAL_CALENDER_EVENT);
+        }
+        calenderRepository.save(calendar);
+        eventRepository.delete(event);
+    }
+
+    @Transactional
+    public void updateCalendarEvent(Long eventId, EventUpdateDto eventUpdateDto) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new ErrorException(Error.EVENT_NOT_FOUND));
         event.changeTitle(eventUpdateDto.getTitle());
         event.changeContent(eventUpdateDto.getContent());
         event.changeColorCode(eventUpdateDto.getColorCode());
         event.changeDate(eventUpdateDto.getStartDateTime(), eventUpdateDto.getEndDateTime());
+
         List<Image> images = eventUpdateDto.getImages() == null ? null : eventUpdateDto.getImages().stream()
                 .map(imageInfo -> {
                     try {
@@ -140,14 +183,29 @@ public class CalendarService {
                     }
                 })
                 .toList();
+
         event.changeImages(images);
     }
 
     @Transactional(readOnly = true)
-    public CalendarEventDetailDto getCalenderEvent(Long eventId ,Long userId) {
-        CalendarEventDetailDto response = eventRepository.getEventDetail(eventId,userId);
-        if(response == null) throw new ErrorException(Error.EVENT_NOT_FOUND);
-        response.setImages(response.getImages().stream().map(imageInfo -> new CalendarEventDetailDto.ImageInfo(baseUrl + imageInfo.getImageUrl() , imageInfo.getOrder())).toList());
+    public CalendarEventDetailDto getCalendarEvent(Long eventId, Long userId) {
+        CalendarEventDetailDto response = eventRepository.getEventDetail(eventId, userId);
+        if (response == null) throw new ErrorException(Error.EVENT_NOT_FOUND);
+        response.setImages(response.getImages().stream().map(imageInfo -> new CalendarEventDetailDto.ImageInfo(baseUrl + imageInfo.getImageUrl(), imageInfo.getOrder())).toList());
         return response;
+    }
+
+    @Transactional
+    public void createCommonDepartmentCalendarEventAll(CommonEventCreationDto eventCreationDtos) {
+        List<Event> insertedData = eventCreationDtos.getEvents().stream()
+                .map(eventCreationDto -> {
+                    Event event = Event.deptEventOf(null); //학사 event 생성
+                    event.changeTitle(eventCreationDto.getTitle());
+                    event.changeContent(eventCreationDto.getContent());
+                    event.changeDate(eventCreationDto.getStartDateTime(),eventCreationDto.getEndDateTime());
+                    event.changeColorCode("#004028"); //학교 색상
+                    return event;
+                }).toList();
+        eventRepository.saveAll(insertedData);
     }
 }

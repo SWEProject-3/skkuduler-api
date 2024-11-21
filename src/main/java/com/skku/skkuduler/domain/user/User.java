@@ -73,6 +73,10 @@ public class User extends BaseEntity {
         return subscriptions.removeIf(subscription -> subscription.getDepartmentId().equals(departmentId));
     }
 
+    public boolean hasPermission(Long departmentId) {
+        return permissions.stream().anyMatch(permission -> permission.getDepartmentId().equals(departmentId));
+    }
+
     public void changeEmail(String email) {
         this.email = email;
     }

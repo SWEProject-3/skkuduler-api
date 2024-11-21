@@ -20,8 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     LEFT JOIN FETCH u.calendar
     WHERE u.userId = :userId AND u.deletedAt IS NULL
     """)
-    @NonNull
-    Optional<User> findByIdFetchCalendar(@Param("userId") @NonNull Long userId);
+    Optional<User> findByIdFetchCalendar(@Param("userId") Long userId);
 
     @Query("""
     SELECT DISTINCT u
@@ -30,6 +29,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     WHERE u.userId = :userId AND u.deletedAt IS NULL
     """)
     Optional<User> findByIdFetchSubscriptions(@Param("userId") Long userId);
+
+    @Query("""
+    SELECT DISTINCT u
+    FROM user u
+    LEFT JOIN FETCH u.permissions
+    WHERE u.userId = :userId AND u.deletedAt IS NULL
+    """)
+    Optional<User> findByIdFetchPermissions(@Param("userId") Long userId);
+
     @Query("""
     SELECT COUNT(*) > 0
     FROM user u

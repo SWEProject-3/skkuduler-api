@@ -5,6 +5,7 @@ import com.skku.skkuduler.application.CalendarService;
 import com.skku.skkuduler.common.exception.Error;
 import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.common.security.JwtUtil;
+import com.skku.skkuduler.domain.user.User;
 import com.skku.skkuduler.dto.request.*;
 import com.skku.skkuduler.dto.response.CalendarEventDetailDto;
 import com.skku.skkuduler.dto.response.CalendarEventSummaryDto;
@@ -69,7 +70,7 @@ public class CalendarEndpoint {
     public ApiResponse<Void> createCalenderEvent(@Valid EventCreationDto eventCreationDto,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
-        calendarService.createUserCalenderEvent(userId, eventCreationDto);
+        calendarService.createUserCalendarEvent(userId, eventCreationDto);
         return new ApiResponse<>("일정이 성공적으로 생성 되었습니다.");
     }
 
@@ -78,7 +79,7 @@ public class CalendarEndpoint {
     public ApiResponse<Void> addCalenderEvent(@PathVariable Long eventId,
                                               @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
-        calendarService.addUserCalenderEvent(userId, eventId);
+        calendarService.addUserCalendarEvent(userId, eventId);
         return new ApiResponse<>("일정이 성공적으로 추가 되었습니다.");
     }
 
@@ -88,7 +89,7 @@ public class CalendarEndpoint {
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
         authService.checkAuthForWritingEvent(eventId, userId);
-        calendarService.updateUserCalenderEvent(eventId, eventUpdateDto);
+        calendarService.updateCalendarEvent(eventId, eventUpdateDto);
         return new ApiResponse<>("일정이 성공적으로 수정되었습니다.");
     }
 
@@ -96,20 +97,27 @@ public class CalendarEndpoint {
     public ApiResponse<Void> deleteCalenderEvent(@PathVariable Long eventId,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
-        calendarService.deleteUserCalenderEvent(eventId, userId);
+        calendarService.deleteUserCalendarEvent(eventId, userId);
         return new ApiResponse<>("일정이 성공적으로 삭제되었습니다.");
     }
 
     //TODO -> 친구인지 체크
     //학과 이벤트인경우 그냥 보여주기, 유저 이벤트인경우 친구 / 내꺼이지 확인
     @GetMapping("/users/calendars/events/{eventId}")
-    public ApiResponse<CalendarEventDetailDto> getCalenderEventDetail(
-            @PathVariable Long eventId,
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public ApiResponse<CalendarEventDetailDto> getCalenderEventDetail(@PathVariable Long eventId,
+                                                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
-        return new ApiResponse<>(calendarService.getCalenderEvent(eventId, userId));
-
+        return new ApiResponse<>(calendarService.getCalendarEvent(eventId, userId));
     }
 
+    @PostMapping("/departments/calendars/events/bulk")
+    public ApiResponse<Void> createCalenderEvents(@Valid @RequestBody CommonEventCreationDto eventCreationDtos,
+                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        if(jwtUtil.extractRole(token) != User.Role.ADMIN){
+            throw new ErrorException(Error.PERMISSION_DENIED);
+        }
+        calendarService.createCommonDepartmentCalendarEventAll(eventCreationDtos);
+        return new ApiResponse<>(null);
+    }
 
 }

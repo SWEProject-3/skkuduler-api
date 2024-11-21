@@ -61,6 +61,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
                         event.eventId,
                         event.createdAt,
                         event.isUserEvent.when(true).then(false).otherwise(true),
+                        event.departmentId.isNull().and(event.userId.isNull()),
                         event.userId.eq(userId),
                         JPAExpressions.selectOne()
                                 .from(calendarEvent)

@@ -47,6 +47,7 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
+    @Transactional(readOnly = true)
     public Page<CommentInfo> getComments(Long eventId, Long viewerId, Pageable p) {
         if(!eventRepository.existsById(eventId)) throw new ErrorException(Error.EVENT_NOT_FOUND);
         return commentRepository.findComments(eventId,viewerId,p);
