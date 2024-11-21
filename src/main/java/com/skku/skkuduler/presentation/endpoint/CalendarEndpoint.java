@@ -118,6 +118,7 @@ public class CalendarEndpoint {
             throw new ErrorException(Error.PERMISSION_DENIED);
         }
         calendarService.createCommonDepartmentCalendarEventAll(eventCreationDtos);
+        return new ApiResponse<>(null);
     }
 
 
