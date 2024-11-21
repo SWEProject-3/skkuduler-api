@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,8 +51,11 @@ public class CalendarService {
                 : departmentRepository.findByIdFetchCalendar(departmentId)
                 .orElseThrow(() -> new ErrorException(Error.DEPARTMENT_NOT_FOUND))
                 .getCalendar();
+        LocalDateTime start = startDate.atStartOfDay(); // 00:00:00
+        LocalDateTime end = endDate.atTime(LocalTime.MAX); // 23:59:59
 
         List<CalendarEventSummaryDto> commonEvents = eventRepository.findCommonDepartmentEvents().stream()
+                .filter(event -> !event.getStartDateTime().isAfter(end) && !event.getEndDateTime().isBefore(start))
                 .map(event -> new CalendarEventSummaryDto(
                         event.getEventId(),
                         event.getTitle(),
@@ -59,17 +64,18 @@ public class CalendarService {
                         event.getEndDateTime()
                 )).toList();
 
-        List<CalendarEventSummaryDto> deptEvent = calendar.getEventsBetween(startDate, endDate).stream().map(
-                event ->
-                        new CalendarEventSummaryDto(
+
+        List<CalendarEventSummaryDto> deptEvent = calendar.getEventsBetween(startDate, endDate).stream()
+                .map(
+                        event -> new CalendarEventSummaryDto(
                                 event.getEventId(),
                                 event.getTitle(),
                                 event.getColorCode(),
                                 event.getStartDateTime(),
                                 event.getEndDateTime()
                         )
-        ).collect(Collectors.toList());
-
+                )
+                .collect(Collectors.toList());
         deptEvent.addAll(commonEvents);
         return deptEvent;
     }
@@ -202,7 +208,7 @@ public class CalendarService {
                     Event event = Event.deptEventOf(null); //학사 event 생성
                     event.changeTitle(eventCreationDto.getTitle());
                     event.changeContent(eventCreationDto.getContent());
-                    event.changeDate(eventCreationDto.getStartDateTime(),eventCreationDto.getEndDateTime());
+                    event.changeDate(eventCreationDto.getStartDateTime(), eventCreationDto.getEndDateTime());
                     event.changeColorCode("#004028"); //학교 색상
                     return event;
                 }).toList();
