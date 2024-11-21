@@ -112,7 +112,7 @@ public class CalendarEndpoint {
     }
 
     @PostMapping("/departments/calendars/events/bulk")
-    public ApiResponse<Void> createCalenderEvents(@Valid List<EventCreationDto> eventCreationDtos,
+    public ApiResponse<Void> createCalenderEvents(@Valid @RequestBody List<CommonEventCreationDto> eventCreationDtos,
                                                   @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if(jwtUtil.extractRole(token) != User.Role.ADMIN){
             throw new ErrorException(Error.PERMISSION_DENIED);

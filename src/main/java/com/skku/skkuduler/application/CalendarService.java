@@ -5,6 +5,7 @@ import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.domain.calender.Calendar;
 import com.skku.skkuduler.domain.calender.Event;
 import com.skku.skkuduler.domain.calender.Image;
+import com.skku.skkuduler.dto.request.CommonEventCreationDto;
 import com.skku.skkuduler.dto.request.EventCreationDto;
 import com.skku.skkuduler.dto.request.EventUpdateDto;
 import com.skku.skkuduler.dto.response.CalendarEventDetailDto;
@@ -191,10 +192,10 @@ public class CalendarService {
     }
 
     @Transactional(readOnly = true)
-    public void createCommonDepartmentCalendarEventAll(@Valid List<EventCreationDto> eventCreationDtos) {
+    public void createCommonDepartmentCalendarEventAll(List<CommonEventCreationDto> eventCreationDtos) {
         List<Event> insertedData = eventCreationDtos.stream()
                 .map(eventCreationDto -> {
-                    Event event = Event.deptEventOf(null); //공동유 학과 event 생성
+                    Event event = Event.deptEventOf(null); //학사 event 생성
                     event.changeTitle(eventCreationDto.getTitle());
                     event.changeContent(eventCreationDto.getContent());
                     event.changeDate(eventCreationDto.getStartDateTime(),eventCreationDto.getEndDateTime());
