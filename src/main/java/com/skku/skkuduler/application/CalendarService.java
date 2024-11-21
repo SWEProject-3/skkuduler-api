@@ -58,6 +58,7 @@ public class CalendarService {
                         event.getStartDateTime(),
                         event.getEndDateTime()
                 )).toList();
+
         List<CalendarEventSummaryDto> deptEvent = calendar.getEventsBetween(startDate, endDate).stream().map(
                 event ->
                         new CalendarEventSummaryDto(
@@ -68,6 +69,7 @@ public class CalendarService {
                                 event.getEndDateTime()
                         )
         ).collect(Collectors.toList());
+
         deptEvent.addAll(commonEvents);
         return deptEvent;
     }
@@ -167,6 +169,7 @@ public class CalendarService {
         event.changeContent(eventUpdateDto.getContent());
         event.changeColorCode(eventUpdateDto.getColorCode());
         event.changeDate(eventUpdateDto.getStartDateTime(), eventUpdateDto.getEndDateTime());
+
         List<Image> images = eventUpdateDto.getImages() == null ? null : eventUpdateDto.getImages().stream()
                 .map(imageInfo -> {
                     try {
@@ -180,6 +183,7 @@ public class CalendarService {
                     }
                 })
                 .toList();
+
         event.changeImages(images);
     }
 
@@ -191,9 +195,9 @@ public class CalendarService {
         return response;
     }
 
-    @Transactional(readOnly = true)
-    public void createCommonDepartmentCalendarEventAll(List<CommonEventCreationDto> eventCreationDtos) {
-        List<Event> insertedData = eventCreationDtos.stream()
+    @Transactional
+    public void createCommonDepartmentCalendarEventAll(CommonEventCreationDto eventCreationDtos) {
+        List<Event> insertedData = eventCreationDtos.getEvents().stream()
                 .map(eventCreationDto -> {
                     Event event = Event.deptEventOf(null); //학사 event 생성
                     event.changeTitle(eventCreationDto.getTitle());

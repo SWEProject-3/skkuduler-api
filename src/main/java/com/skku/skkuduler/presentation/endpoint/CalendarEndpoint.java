@@ -108,11 +108,10 @@ public class CalendarEndpoint {
                                                                       @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
         return new ApiResponse<>(calendarService.getCalendarEvent(eventId, userId));
-
     }
 
     @PostMapping("/departments/calendars/events/bulk")
-    public ApiResponse<Void> createCalenderEvents(@Valid @RequestBody List<CommonEventCreationDto> eventCreationDtos,
+    public ApiResponse<Void> createCalenderEvents(@Valid @RequestBody CommonEventCreationDto eventCreationDtos,
                                                   @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if(jwtUtil.extractRole(token) != User.Role.ADMIN){
             throw new ErrorException(Error.PERMISSION_DENIED);
@@ -120,6 +119,5 @@ public class CalendarEndpoint {
         calendarService.createCommonDepartmentCalendarEventAll(eventCreationDtos);
         return new ApiResponse<>(null);
     }
-
 
 }
