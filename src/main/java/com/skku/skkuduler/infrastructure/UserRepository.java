@@ -1,7 +1,9 @@
 package com.skku.skkuduler.infrastructure;
 
 import com.skku.skkuduler.domain.user.User;
+import com.skku.skkuduler.dto.response.DepartmentPermissionDto;
 import com.skku.skkuduler.dto.response.UserProfileDto;
+import com.skku.skkuduler.infrastructure.querydsl.UserCustomRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, UserCustomRepository {
 
     @Query("""
     SELECT DISTINCT u
@@ -71,4 +73,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     WHERE u.userId = :userId AND u.deletedAt IS NULL
     """)
     Optional<UserProfileDto> getUserProfileDto(@Param("userId") Long userId, @Param("viewerId") Long viewerId);
+
 }

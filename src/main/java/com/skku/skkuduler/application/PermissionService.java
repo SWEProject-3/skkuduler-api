@@ -4,8 +4,10 @@ import com.skku.skkuduler.common.exception.Error;
 import com.skku.skkuduler.common.exception.ErrorException;
 import com.skku.skkuduler.domain.calender.Event;
 import com.skku.skkuduler.domain.user.User;
+import com.skku.skkuduler.dto.response.DepartmentPermissionDto;
 import com.skku.skkuduler.infrastructure.EventRepository;
 import com.skku.skkuduler.infrastructure.UserRepository;
+import com.skku.skkuduler.presentation.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,5 +29,9 @@ public class PermissionService {
         User user = userRepository.findByIdFetchPermissions(userId).orElseThrow(()-> new ErrorException(Error.USER_NOT_FOUND));
         Event event = eventRepository.findById(eventId).orElseThrow(()-> new ErrorException(Error.EVENT_NOT_FOUND));
         return user.hasPermission(event.getDepartmentId());
+    }
+
+    public DepartmentPermissionDto getDepartmentPermissions(Long userId) {
+        return userRepository.getDepartmentPermissionDto(userId);
     }
 }
