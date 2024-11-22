@@ -20,7 +20,7 @@ public class CalendarEventDetailDto {
     private LocalDateTime createdAt;
     private Boolean isDepartmentEvent;
     private Boolean isCommonEvent;
-    private Boolean isMyEvent;
+    private Boolean hasPermission;
     private Boolean isAddedToMyCalendar;
     private Long ownerUserId;
     private String ownerName;

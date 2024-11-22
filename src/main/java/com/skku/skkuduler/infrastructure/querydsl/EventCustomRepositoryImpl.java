@@ -15,6 +15,7 @@ import com.skku.skkuduler.domain.calender.QImage;
 import com.skku.skkuduler.domain.comment.QComment;
 import com.skku.skkuduler.domain.department.QDepartment;
 import com.skku.skkuduler.domain.like.QLikes;
+import com.skku.skkuduler.domain.user.QPermission;
 import com.skku.skkuduler.domain.user.QUser;
 import com.skku.skkuduler.dto.request.SortType;
 import com.skku.skkuduler.dto.response.CalendarEventDetailDto;
@@ -48,6 +49,14 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
         QLikes like = QLikes.likes;
         QCalendar calendar = QCalendar.calendar;
         QCalendarEvent calendarEvent = QCalendarEvent.calendarEvent;
+        QPermission permission = QPermission.permission;
+        BooleanExpression hasPermission =
+                event.isUserEvent.isTrue().and(event.userId.eq(userId))
+                        .or(JPAExpressions.selectOne()
+                                .from(permission)
+                                .where(permission.user.userId.eq(userId)
+                                        .and(permission.departmentId.eq(event.departmentId)))
+                                .exists());
 
         List<CalendarEventDetailDto> response = jpaQueryFactory
                 .selectFrom(event)
@@ -62,7 +71,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
                         event.createdAt,
                         event.isUserEvent.when(true).then(false).otherwise(true),
                         event.departmentId.isNull().and(event.userId.isNull()),
-                        event.userId.eq(userId),
+                        hasPermission,
                         JPAExpressions.selectOne()
                                 .from(calendarEvent)
                                 .join(calendarEvent.calendar, calendar)
@@ -99,7 +108,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
     }
 
     @Override
-    public Page<DepartmentEventSummaryDto> getDepartmentEventSummaryDtos(List<Long> departmentIds, SortType sortType, String query, Pageable pageable){
+    public Page<DepartmentEventSummaryDto> getDepartmentEventSummaryDtos(List<Long> departmentIds, SortType sortType, String query, Pageable pageable) {
 
         QEvent event = QEvent.event;
         QLikes like = QLikes.likes;
@@ -145,8 +154,9 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
                 .from(event)
                 .where(whereCondition);
 
-        return PageableExecutionUtils.getPage(content,pageable,count::fetchOne);
+        return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
     }
+
     private OrderSpecifier<?> getSortOrder(SortType sortType, QEvent event, QLikes like, QComment comment) {
         if (sortType == SortType.LIKES) {
             return like.countDistinct().desc();
