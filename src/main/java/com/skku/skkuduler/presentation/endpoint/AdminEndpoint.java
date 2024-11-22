@@ -22,7 +22,7 @@ public class AdminEndpoint {
     private final PermissionService permissionService;
 
     // 학과 일정 등록
-    @PostMapping("/departments/{departmentId}/events")
+    @PostMapping("/departments/{departmentId}/calendars/events")
     public ApiResponse<Void> createDepartmentEvent(@PathVariable("departmentId") Long departmentId,
                                                    EventCreationDto eventCreationDto,
                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
@@ -38,7 +38,7 @@ public class AdminEndpoint {
 
     }
     // 학과 일정 수정
-    @PutMapping("/departments/events/{eventId}")
+    @PutMapping("/departments/calendars/events/{eventId}")
     public ApiResponse<Void> updateDepartmentEvent(@PathVariable("eventId") Long eventId,
                                                    EventUpdateDto eventUpdateDto,
                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
@@ -54,7 +54,7 @@ public class AdminEndpoint {
 
     }
     // 학과 일정 삭제
-    @DeleteMapping("/departments/events/{eventId}")
+    @DeleteMapping("/departments/calendars/events/{eventId}")
     public ApiResponse<Void> deleteDepartmentEvent(@PathVariable("eventId") Long eventId,
                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
