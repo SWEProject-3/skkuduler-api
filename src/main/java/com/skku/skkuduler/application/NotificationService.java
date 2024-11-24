@@ -33,7 +33,6 @@ public class NotificationService {
         // PENDING 상태의 친구 요청 가져오기
         List<Friendship> pendingRequests = friendshipRepository.findByToUserIdAndStatus(userId, FriendshipStatus.PENDING);
 
-        // Friendship -> FriendInfoDto 변환
         return pendingRequests.stream().map(friendship -> {
             Long friendUserId = friendship.getFromUserId();
             return userRepository.findById(friendUserId).map(user ->
