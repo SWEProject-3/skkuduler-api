@@ -32,5 +32,6 @@ public class EventUpdateDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     @NotNull
     private LocalDateTime endDateTime;
+    private Boolean isImageChanged;
     private MultipartFile imageFile;
 }

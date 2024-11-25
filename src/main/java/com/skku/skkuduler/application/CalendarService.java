@@ -165,7 +165,7 @@ public class CalendarService {
         event.changeContent(eventUpdateDto.getContent());
         event.changeColorCode(eventUpdateDto.getColorCode());
         event.changeDate(eventUpdateDto.getStartDateTime(), eventUpdateDto.getEndDateTime());
-        if (eventUpdateDto.getImageFile() != null) {
+        if (eventUpdateDto.getIsImageChanged()) {
             Image image = Image.builder()
                     .event(event)
                     .src(fileService.storeFile(eventUpdateDto.getImageFile()))

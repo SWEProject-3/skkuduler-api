@@ -71,8 +71,6 @@ public class Event extends BaseEntity{
     }
 
     public void changeImage(Image image){
-        if(image != null){
-            this.imageFile = image;
-        }
+        this.imageFile = image;
     }
 }
