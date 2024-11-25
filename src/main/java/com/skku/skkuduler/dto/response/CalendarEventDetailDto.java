@@ -22,13 +22,14 @@ public class CalendarEventDetailDto {
     private Boolean isCommonEvent;
     private Boolean hasPermission;
     private Boolean isAddedToMyCalendar;
+    private Boolean isLiked;
     private Long ownerUserId;
     private String ownerName;
     private Long departmentId;
     private String departmentName;
     private Long likeCount;
     private EventInfo eventInfo;
-    private List<ImageInfo> images;
+    private String imageUrl;
 
     @Data
     @AllArgsConstructor
@@ -45,12 +46,5 @@ public class CalendarEventDetailDto {
         private LocalDateTime endDateTime;
     }
 
-    @Data
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class ImageInfo{
-        private String imageUrl;
-        private int order;
-    }
+
 }

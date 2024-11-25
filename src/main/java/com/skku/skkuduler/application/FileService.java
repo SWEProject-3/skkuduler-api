@@ -4,6 +4,8 @@ import com.google.cloud.ReadChannel;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.skku.skkuduler.common.exception.Error;
+import com.skku.skkuduler.common.exception.ErrorException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,7 @@ public class FileService {
     private String bucketName;
     private final Storage storage;
 
-    public String storeFile(MultipartFile file) throws IOException {
+    public String storeFile(MultipartFile file){
         if(file == null || file.isEmpty() || file.getOriginalFilename() == null) return "";
         String fileExtension = "";
         String originalFileName = file.getOriginalFilename();
@@ -30,10 +32,14 @@ public class FileService {
             fileExtension = file.getOriginalFilename().substring(originalFileName.lastIndexOf("."));
         }
         String fileName = UUID.randomUUID() + fileExtension;
-        storage.create(
-                BlobInfo.newBuilder(bucketName, fileName).build(),
-                file.getBytes()
-        );
+        try {
+            storage.create(
+                    BlobInfo.newBuilder(bucketName, fileName).build(),
+                    file.getBytes()
+            );
+        } catch (IOException e) {
+            throw new ErrorException(Error.FILE_STORE_ERROR);
+        }
         return fileName;
 
     }

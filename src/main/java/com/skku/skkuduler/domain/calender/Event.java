@@ -40,9 +40,8 @@ public class Event extends BaseEntity{
 
     private Long departmentId;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images = new ArrayList<>();
+    @OneToOne(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Image imageFile;
 
     public static Event userEventOf(Long userId){
         return Event.builder().userId(userId).isUserEvent(true).build();
@@ -71,10 +70,7 @@ public class Event extends BaseEntity{
         }
     }
 
-    public void changeImages(List<Image> images){
-        this.images.clear();
-        if(images != null) {
-            this.images.addAll(images);
-        }
+    public void changeImage(Image image){
+        this.imageFile = image;
     }
 }
