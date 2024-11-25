@@ -14,7 +14,6 @@ import com.skku.skkuduler.infrastructure.CalenderRepository;
 import com.skku.skkuduler.infrastructure.DepartmentRepository;
 import com.skku.skkuduler.infrastructure.EventRepository;
 import com.skku.skkuduler.infrastructure.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -105,21 +104,12 @@ public class CalendarService {
         event.changeColorCode(eventCreationDto.getColorCode());
         event.changeDate(eventCreationDto.getStartDateTime(), eventCreationDto.getEndDateTime());
 
-        if (eventCreationDto.getImages() != null) {
-            List<Image> images = eventCreationDto.getImages().stream()
-                    .map(imageInfo -> {
-                        try {
-                            return Image.builder()
-                                    .event(event)
-                                    .src(fileService.storeFile(imageInfo.getImageFile()))
-                                    .order(imageInfo.getOrder())
-                                    .build();
-                        } catch (IOException e) {
-                            throw new ErrorException(Error.FILE_STORE_ERROR);
-                        }
-                    })
-                    .toList();
-            event.changeImages(images);
+        if (eventCreationDto.getImageFile() != null) {
+            Image image = Image.builder()
+                    .event(event)
+                    .src(fileService.storeFile(eventCreationDto.getImageFile()))
+                    .build();
+            event.changeImage(image);
         }
         calendar.addEvent(event);
     }
@@ -175,29 +165,21 @@ public class CalendarService {
         event.changeContent(eventUpdateDto.getContent());
         event.changeColorCode(eventUpdateDto.getColorCode());
         event.changeDate(eventUpdateDto.getStartDateTime(), eventUpdateDto.getEndDateTime());
-
-        List<Image> images = eventUpdateDto.getImages() == null ? null : eventUpdateDto.getImages().stream()
-                .map(imageInfo -> {
-                    try {
-                        return Image.builder()
-                                .event(event)
-                                .src(fileService.storeFile(imageInfo.getImageFile()))
-                                .order(imageInfo.getOrder())
-                                .build();
-                    } catch (IOException e) {
-                        throw new ErrorException(Error.FILE_STORE_ERROR);
-                    }
-                })
-                .toList();
-
-        event.changeImages(images);
+        if (eventUpdateDto.getImageFile() != null) {
+            Image image = Image.builder()
+                    .event(event)
+                    .src(fileService.storeFile(eventUpdateDto.getImageFile()))
+                    .build();
+            event.changeImage(image);
+        }
+        eventRepository.save(event);
     }
 
     @Transactional(readOnly = true)
     public CalendarEventDetailDto getCalendarEvent(Long eventId, Long userId) {
         CalendarEventDetailDto response = eventRepository.getEventDetail(eventId, userId);
         if (response == null) throw new ErrorException(Error.EVENT_NOT_FOUND);
-        response.setImages(response.getImages().stream().map(imageInfo -> new CalendarEventDetailDto.ImageInfo(baseUrl + imageInfo.getImageUrl(), imageInfo.getOrder())).toList());
+        response.setImageUrl(baseUrl + response.getImageUrl());
         return response;
     }
 

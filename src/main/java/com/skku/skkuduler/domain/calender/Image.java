@@ -22,7 +22,7 @@ public class Image {
     @Column(name = "`order`")
     private int order;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "event_id")
     private Event event;
 

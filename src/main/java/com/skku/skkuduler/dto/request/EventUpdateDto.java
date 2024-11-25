@@ -1,6 +1,7 @@
 package com.skku.skkuduler.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.skku.skkuduler.domain.calender.Image;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -31,13 +32,5 @@ public class EventUpdateDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     @NotNull
     private LocalDateTime endDateTime;
-    private List<ImageInfo> images;
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class ImageInfo{
-        private MultipartFile imageFile;
-        private Integer order;
-    }
+    private MultipartFile imageFile;
 }

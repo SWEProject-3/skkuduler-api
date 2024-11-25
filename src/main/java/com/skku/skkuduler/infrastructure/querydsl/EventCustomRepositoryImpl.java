@@ -57,15 +57,18 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
                                 .where(permission.user.userId.eq(userId)
                                         .and(permission.departmentId.eq(event.departmentId)))
                                 .exists());
-
+        BooleanExpression isLiked =
+                JPAExpressions.selectOne()
+                        .from(like)
+                        .where(like.userId.eq(userId))
+                        .exists();
         List<CalendarEventDetailDto> response = jpaQueryFactory
                 .selectFrom(event)
                 .distinct()
                 .leftJoin(user).on(event.userId.eq(user.userId))
                 .leftJoin(department).on(event.departmentId.eq(department.departmentId))
-                .leftJoin(event.images, image)
+                .leftJoin(event.imageFile, image)
                 .where(event.eventId.eq(eventId))
-                .orderBy(image.order.asc())
                 .transform(groupBy(event.eventId).list(Projections.constructor(CalendarEventDetailDto.class,
                         event.eventId,
                         event.createdAt,
@@ -78,6 +81,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
                                 .where(calendar.user.userId.eq(userId)
                                         .and(calendarEvent.event.eventId.eq(eventId)))
                                 .exists(),
+                        isLiked,
                         user.userId,
                         user.name,
                         department.departmentId,
@@ -93,17 +97,11 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
                                 event.startDateTime,
                                 event.endDateTime
                         ),
-                        list(Projections.constructor(CalendarEventDetailDto.ImageInfo.class,
-                                image.src,
-                                image.order
-                        ))
+                        image.src
                 )));
 
 
         if (response.isEmpty()) return null;
-        if (response.get(0).getImages().get(0).getImageUrl() == null) {
-            response.get(0).setImages(new ArrayList<>());
-        }
         return response.get(0);
     }
 

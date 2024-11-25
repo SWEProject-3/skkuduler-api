@@ -10,7 +10,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -30,14 +29,7 @@ public class EventCreationDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime endDateTime;
-    private List<ImageInfo> images;
+    private MultipartFile imageFile;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class ImageInfo {
-        private MultipartFile imageFile;
-        private Integer order;
-    }
 }
 
