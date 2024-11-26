@@ -67,7 +67,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
                 .distinct()
                 .leftJoin(user).on(event.userId.eq(user.userId))
                 .leftJoin(department).on(event.departmentId.eq(department.departmentId))
-                .leftJoin(event.imageFile, image)
+                .leftJoin(event.image, image)
                 .where(event.eventId.eq(eventId))
                 .transform(groupBy(event.eventId).list(Projections.constructor(CalendarEventDetailDto.class,
                         event.eventId,

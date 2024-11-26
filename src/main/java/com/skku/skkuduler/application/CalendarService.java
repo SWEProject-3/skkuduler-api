@@ -52,7 +52,6 @@ public class CalendarService {
                 .getCalendar();
         LocalDateTime start = startDate.atStartOfDay(); // 00:00:00
         LocalDateTime end = endDate.atTime(LocalTime.MAX); // 23:59:59
-
         List<CalendarEventSummaryDto> commonEvents = eventRepository.findCommonDepartmentEvents().stream()
                 .filter(event -> !event.getStartDateTime().isAfter(end) && !event.getEndDateTime().isBefore(start))
                 .map(event -> new CalendarEventSummaryDto(
@@ -62,7 +61,6 @@ public class CalendarService {
                         event.getStartDateTime(),
                         event.getEndDateTime()
                 )).toList();
-
 
         List<CalendarEventSummaryDto> deptEvent = calendar.getEventsBetween(startDate, endDate).stream()
                 .map(
