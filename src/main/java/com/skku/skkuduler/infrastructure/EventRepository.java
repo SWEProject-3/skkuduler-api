@@ -13,6 +13,7 @@ public interface EventRepository extends JpaRepository<Event,Long>, EventCustomR
     @Query("""
     SELECT e
     FROM event e
+    LEFT JOIN FETCH e.image
     WHERE e.departmentId IS NULL AND e.userId IS NULL AND e.isUserEvent = false
     """)
     List<Event> findCommonDepartmentEvents();

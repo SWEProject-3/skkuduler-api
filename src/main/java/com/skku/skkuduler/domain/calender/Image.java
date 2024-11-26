@@ -19,9 +19,6 @@ public class Image {
 
     private String src;
 
-    @Column(name = "`order`")
-    private int order;
-
     @OneToOne
     @JoinColumn(name = "event_id")
     private Event event;

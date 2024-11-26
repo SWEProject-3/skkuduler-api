@@ -41,7 +41,7 @@ public class Event extends BaseEntity{
     private Long departmentId;
 
     @OneToOne(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Image imageFile;
+    private Image image;
 
     public static Event userEventOf(Long userId){
         return Event.builder().userId(userId).isUserEvent(true).build();
@@ -71,6 +71,6 @@ public class Event extends BaseEntity{
     }
 
     public void changeImage(Image image){
-        this.imageFile = image;
+        this.image = image;
     }
 }
