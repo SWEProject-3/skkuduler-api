@@ -49,7 +49,6 @@ steps:
       - 'SPRING_DATASOURCE_PASSWORD=${_SPRING_DATASOURCE_PASSWORD}'
       - 'SPRING_JWT_SECRET=${_SPRING_JWT_SECRET}'
       - 'SPRING_SERVER_BASE_URL=${_SPRING_SERVER_BASE_URL}'
-      - 'TZ=Asia/Seoul'
 
 images:
   - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/skkuduler/skkuduler-api'
