@@ -6,14 +6,10 @@ import com.skku.skkuduler.application.UserService;
 import com.skku.skkuduler.common.security.JwtUtil;
 import com.skku.skkuduler.dto.request.ProfileUpdateDto;
 import com.skku.skkuduler.dto.request.UserPasswordDto;
-import com.skku.skkuduler.dto.response.DepartmentSummaryDto;
 import com.skku.skkuduler.dto.response.UserProfileDto;
 import com.skku.skkuduler.presentation.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +20,6 @@ public class UserEndpoint {
 
     private final JwtUtil jwtUtil;
     private final UserService userService;
-    private final DepartmentService departmentService;
-
 
     @PostMapping("/subscriptions/departments/{departmentId}")
     public ApiResponse<Void> subscribeDepartment(@PathVariable("departmentId") Long departmentId,
@@ -55,7 +49,7 @@ public class UserEndpoint {
     public ApiResponse<UserProfileDto> getUserProfile(@PathVariable("userId") Long userId,
                                                       @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
         Long viewerId = jwtUtil.extractUserId(token);
-        return new ApiResponse<>(userService.getUserProfileDto(userId,viewerId));
+        return new ApiResponse<>(userService.getUserProfileDto(userId, viewerId));
     }
 
     @DeleteMapping("/withdraw")

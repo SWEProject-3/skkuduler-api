@@ -26,18 +26,18 @@ public class DepartmentEndpoint {
 
     @GetMapping("/users/{userId}/subscriptions/departments")
     public ApiResponse<Page<DepartmentSummaryDto>> getSubscribedDepartments(@PathVariable("userId") Long userId,
-                                                                            @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                            @RequestParam(value = "page", required = false) Integer page,
                                                                             @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = page == null ? Pageable.unpaged() : PageRequest.of(page, 10);
         return new ApiResponse<>(departmentService.getSubscribedDepartments(userId, pageable));
     }
 
     @GetMapping("/departments")
-    public ApiResponse<Page<DepartmentSearchResponseDto>> getDepartments(@RequestParam(name = "page", defaultValue = "0") int page,
+    public ApiResponse<Page<DepartmentSearchResponseDto>> getDepartments(@RequestParam(name = "page", required = false) Integer page,
                                                                          @RequestParam(required = false, name = "query") String query,
                                                                          @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token){
         Long userId = jwtUtil.extractUserId(token);
-        Pageable pageable = PageRequest.of(page,10);
+        Pageable pageable = page == null ? Pageable.unpaged() : PageRequest.of(page,10);
         if(query == null || query.isBlank() || query.isEmpty()){
             return new ApiResponse<>(departmentService.getAllDepartmentsByUser(pageable,userId));
         }else {
@@ -47,10 +47,10 @@ public class DepartmentEndpoint {
     @GetMapping("/users/subscriptions/departments/events")
     public ApiResponse<Page<DepartmentEventSummaryDto>> getSubscribedDepartmentsEvent(@RequestParam(value = "sort",defaultValue = "latest") String sort,
                                                                                       @RequestParam(value = "query",required = false) String query,
-                                                                                      @RequestParam(value = "page",defaultValue = "0") int page,
+                                                                                      @RequestParam(value = "page", required = false) Integer page,
                                                                                       @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
         Long userId = jwtUtil.extractUserId(token);
-        Pageable p = PageRequest.of(page,10);
+        Pageable p = page == null ? Pageable.unpaged() : PageRequest.of(page,10);
         SortType sortType = SortType.of(sort).orElseThrow(()-> new ErrorException(Error.INVALID_URL_PARAMETERS));
         System.out.println("sort = " + sort);
         System.out.println("sortType = " + sortType);
