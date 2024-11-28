@@ -73,7 +73,9 @@ public class CalendarService {
                         )
                 )
                 .collect(Collectors.toList());
-        deptEvent.addAll(commonEvents);
+        if(userId == null && departmentId != null) {
+            deptEvent.addAll(commonEvents);
+        }
         return deptEvent;
     }
 
