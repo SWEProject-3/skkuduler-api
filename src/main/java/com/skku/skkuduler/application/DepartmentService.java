@@ -46,9 +46,8 @@ public class DepartmentService {
     public Page<DepartmentEventSummaryDto> getDepartmentsEvents(Long userId, String query, SortType sortType, Pageable pageable){
         User user = userRepository.findByIdFetchSubscriptions(userId).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));
         List<Subscription> subscription = user.getSubscriptions();
-        if(subscription.isEmpty()) throw new ErrorException(Error.SUBSCRIPTIONS_NOT_EXIST);
         List<Long> departmentIds = subscription.stream().map(Subscription::getDepartmentId).toList();
-        return eventRepository.getDepartmentEventSummaryDtos(departmentIds,sortType,query, pageable);
+        return eventRepository.getDepartmentEventSummaryDtos(departmentIds,userId,sortType,query, pageable);
     }
 
 }

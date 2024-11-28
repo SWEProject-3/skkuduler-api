@@ -3,8 +3,7 @@ package com.skku.skkuduler.infrastructure.querydsl;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -27,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -106,16 +106,25 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
     }
 
     @Override
-    public Page<DepartmentEventSummaryDto> getDepartmentEventSummaryDtos(List<Long> departmentIds, SortType sortType, String query, Pageable pageable) {
+    public Page<DepartmentEventSummaryDto> getDepartmentEventSummaryDtos(List<Long> departmentIds, Long userId, SortType sortType, String query, Pageable pageable) {
 
         QEvent event = QEvent.event;
         QLikes like = QLikes.likes;
         QComment comment = QComment.comment;
         QDepartment department = QDepartment.department;
+
         BooleanExpression whereCondition = event.departmentId.in(departmentIds)
-                .and(query != null && !query.isEmpty()
-                        ? event.title.containsIgnoreCase(query).or(event.content.containsIgnoreCase(query))
-                        : null);
+                .or(event.userId.eq(userId));
+        System.out.println("departmentIds = " + departmentIds);
+        if (!departmentIds.isEmpty()) {
+            whereCondition = whereCondition.or(event.departmentId.isNull().and(event.userId.isNull()));
+        }
+        if (query != null && !query.isEmpty()) {
+            whereCondition = whereCondition.and(
+                    event.title.containsIgnoreCase(query)
+                            .or(event.content.containsIgnoreCase(query))
+            );
+        }
 
         List<DepartmentEventSummaryDto> content = jpaQueryFactory
                 .select(Projections.constructor(
@@ -138,7 +147,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
 
                 ))
                 .from(event)
-                .join(department).on(event.departmentId.eq(department.departmentId))
+                .leftJoin(department).on(department.departmentId.eq(event.departmentId))
                 .leftJoin(like).on(like.eventId.eq(event.eventId))
                 .leftJoin(comment).on(comment.eventId.eq(event.eventId))
                 .where(whereCondition)
@@ -155,15 +164,41 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
         return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
     }
 
-    private OrderSpecifier<?> getSortOrder(SortType sortType, QEvent event, QLikes like, QComment comment) {
+
+    private OrderSpecifier<?>[] getSortOrder(SortType sortType, QEvent event, QLikes like, QComment comment) {
+        LocalDateTime now = LocalDateTime.now();
+
+        BooleanExpression isActive = event.startDateTime.loe(now)
+                .and(event.endDateTime.goe(now));
+        BooleanExpression isFuture = event.startDateTime.goe(now);
+
+        NumberExpression<Integer> priority = new CaseBuilder()
+                .when(isActive).then(1)
+                .when(isFuture).then(2)
+                .otherwise(3);
+
+        OrderSpecifier<?>[] baseOrder = new OrderSpecifier<?>[] {
+                priority.asc(),
+                event.startDateTime.asc()
+        };
+
         if (sortType == SortType.LIKES) {
-            return like.countDistinct().desc();
+            return new OrderSpecifier<?>[] {
+                    like.countDistinct().desc(),
+                    priority.asc(),
+                    event.startDateTime.asc()
+            };
         } else if (sortType == SortType.COMMENTS) {
-            return comment.countDistinct().desc();
-        } else if (sortType == SortType.LATEST) {
-            return event.createdAt.desc();
+            return new OrderSpecifier<?>[] {
+                    comment.countDistinct().desc(),
+                    priority.asc(),
+                    event.startDateTime.asc()
+            };
         } else {
-            return null;
+            return baseOrder;
         }
     }
+
+
+
 }
