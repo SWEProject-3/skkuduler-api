@@ -112,13 +112,13 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
         QLikes like = QLikes.likes;
         QComment comment = QComment.comment;
         QDepartment department = QDepartment.department;
-
         BooleanExpression whereCondition = event.departmentId.in(departmentIds)
                 .or(event.userId.eq(userId));
-        System.out.println("departmentIds = " + departmentIds);
+
         if (!departmentIds.isEmpty()) {
             whereCondition = whereCondition.or(event.departmentId.isNull().and(event.userId.isNull()));
         }
+
         if (query != null && !query.isEmpty()) {
             whereCondition = whereCondition.and(
                     event.title.containsIgnoreCase(query)
@@ -126,7 +126,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
             );
         }
 
-        List<DepartmentEventSummaryDto> content = jpaQueryFactory
+        JPAQuery<DepartmentEventSummaryDto> q = jpaQueryFactory
                 .select(Projections.constructor(
                         DepartmentEventSummaryDto.class,
                         Projections.constructor(
@@ -152,16 +152,17 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
                 .leftJoin(comment).on(comment.eventId.eq(event.eventId))
                 .where(whereCondition)
                 .groupBy(event.eventId)
-                .orderBy(getSortOrder(sortType, event, like, comment))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+                .orderBy(getSortOrder(sortType, event, like, comment));
+
+        if (pageable.isPaged()) {
+            q.offset(pageable.getOffset()).limit(pageable.getPageSize());
+        }
 
         JPAQuery<Long> count = jpaQueryFactory.select(event.countDistinct())
                 .from(event)
                 .where(whereCondition);
 
-        return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
+        return PageableExecutionUtils.getPage(q.fetch(), pageable, count::fetchOne);
     }
 
 

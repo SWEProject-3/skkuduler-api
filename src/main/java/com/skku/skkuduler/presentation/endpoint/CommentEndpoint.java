@@ -24,17 +24,17 @@ public class CommentEndpoint {
 
     @GetMapping("/users/events/{eventId}/comments")
     public ApiResponse<Page<CommentInfo>> getComments(@PathVariable("eventId") Long eventId,
-                                                      @RequestParam(value = "page",defaultValue = "0") int page,
+                                                      @RequestParam(value = "page", required = false) Integer page,
                                                       @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
         Long viewerId = jwtUtil.extractUserId(token);
-        Pageable p = PageRequest.of(page, 20);
-        return new ApiResponse<>(commentService.getComments(eventId,viewerId,p));
+        Pageable p = page == null ? Pageable.unpaged() : PageRequest.of(page, 20);
+        return new ApiResponse<>(commentService.getComments(eventId, viewerId, p));
     }
 
     @PostMapping("/users/events/{eventId}/comments")
     public ApiResponse<Void> createComment(@PathVariable("eventId") Long eventId,
-                                            @RequestBody CommentCreateDto commentCreateDto,
-                                            @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+                                           @RequestBody CommentCreateDto commentCreateDto,
+                                           @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
         Long userId = jwtUtil.extractUserId(token);
         commentService.createComment(eventId, userId, commentCreateDto.getContent());
         return new ApiResponse<>("댓글이 성공적으로 등록되었습니다.");
