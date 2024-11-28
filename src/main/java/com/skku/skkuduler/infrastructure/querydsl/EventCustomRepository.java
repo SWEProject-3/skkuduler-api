@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface EventCustomRepository {
     CalendarEventDetailDto getEventDetail(Long evenId , Long userId);
-    Page<DepartmentEventSummaryDto> getDepartmentEventSummaryDtos(List<Long> departmentIds, SortType sortType, String query, Pageable pageable);
+    Page<DepartmentEventSummaryDto> getDepartmentEventSummaryDtos(List<Long> departmentIds,Long userId, SortType sortType, String query, Pageable pageable);
 }
