@@ -59,25 +59,13 @@ public class Calendar {
                 .build();
     }
 
-    public boolean existsEvent(Long eventId){
-        return calendarEvents.stream().map(CalendarEvent::getEvent).anyMatch(event -> event.getEventId().equals(eventId));
-    }
-
     public void addEvent(Event event) {
         CalendarEvent calendarEvent = new CalendarEvent(null, event, this);
         this.calendarEvents.add(calendarEvent);
     }
 
-    public Optional<Event> getEvent(Long eventId) {
-        return calendarEvents.stream().map(CalendarEvent::getEvent).filter(event -> event.getEventId().equals(eventId)).findFirst();
-    }
-
     public boolean removeEvent(Event event) {
         return calendarEvents.removeIf(calendarEvent -> calendarEvent.getEvent().getEventId().equals(event.getEventId()));
-    }
-
-    public void changeName(String name) {
-        this.name = name;
     }
 
     public List<Event> getEventsBetween(LocalDate startDate, LocalDate endDate) {
