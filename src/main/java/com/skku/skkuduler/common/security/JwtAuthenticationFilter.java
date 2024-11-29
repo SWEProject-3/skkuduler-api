@@ -33,7 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String token= request.getHeader("Authorization");
-        System.out.println("token = " + token);
         try {
             jwtUtil.validateToken(token);
         }catch (ErrorException e){
