@@ -60,7 +60,7 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
         BooleanExpression isLiked =
                 JPAExpressions.selectOne()
                         .from(like)
-                        .where(like.userId.eq(userId))
+                        .where(like.userId.eq(userId).and(like.eventId.eq(eventId)))
                         .exists();
         List<CalendarEventDetailDto> response = jpaQueryFactory
                 .selectFrom(event)
