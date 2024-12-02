@@ -10,7 +10,7 @@ import com.skku.skkuduler.dto.request.EventCreationDto;
 import com.skku.skkuduler.dto.request.EventUpdateDto;
 import com.skku.skkuduler.dto.response.CalendarEventDetailDto;
 import com.skku.skkuduler.dto.response.CalendarEventSummaryDto;
-import com.skku.skkuduler.infrastructure.CalenderRepository;
+import com.skku.skkuduler.infrastructure.CalendarRepository;
 import com.skku.skkuduler.infrastructure.DepartmentRepository;
 import com.skku.skkuduler.infrastructure.EventRepository;
 import com.skku.skkuduler.infrastructure.UserRepository;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CalendarService {
 
-    private final CalenderRepository calenderRepository;
+    private final CalendarRepository calenderRepository;
     private final EventRepository eventRepository;
     private final DepartmentRepository departmentRepository;
     private final UserRepository userRepository;

@@ -69,4 +69,5 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     """)
     List<FriendInfoDto> getFriendInfoDtosByToUserIdAndPending(@Param("toUserId") Long toUserId);
 
+    List<Friendship> findByToUserIdAndStatus(Long userId, Friendship.FriendshipStatus friendshipStatus);
 }
